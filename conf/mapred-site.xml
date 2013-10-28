@@ -32,4 +32,8 @@
     <name>mapred.reduce.slowstart.completed.maps</name>
     <value>1.00</value>
   </property>
+  <property>
+    <name>mapred.workflow.schedulingPlan</name>
+    <value>org.apache.hadoop.mapred.workflow.MBFSchedulingPlan</value>
+  </property>
 </configuration>

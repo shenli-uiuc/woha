@@ -24,6 +24,11 @@ public class MBFSchedulingPlan extends SchedulingPlan {
   }
 
   @Override
+  public int getSlotNum() {
+    return slotNum;
+  }
+
+  @Override
   public boolean generatePlan(int maxSlots, 
                               WorkflowConf wfConf) {
 

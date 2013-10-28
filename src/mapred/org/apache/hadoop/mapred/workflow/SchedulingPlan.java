@@ -15,6 +15,8 @@ public abstract class SchedulingPlan implements Writable {
    */
   public abstract long getRequirement (long ttd);
 
+  public abstract int getSlotNum();
+
   /**
    * generate the scheduling plan given the maximum slots
    *

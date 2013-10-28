@@ -21,6 +21,7 @@ import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.mapred.JobTrackerNotYetInitializedException;
 import org.apache.hadoop.mapred.SafeModeException;
 import org.apache.hadoop.mapred.JobTracker;
+import org.apache.hadoop.mapred.ClusterStatus;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -183,17 +184,24 @@ public class WorkflowClient extends Configured{
         Path wfStagingArea = WorkflowSubmissionFiles.getStagingDir(
           getStagingAreaDir(), wfCopy);
         System.out.println("Before request ID");
+
+        // get workflow id
         WorkflowID wfid = workflowSubmitClient.getNewWorkflowId();
         Path submitWfDir = new Path(wfStagingArea, wfid.toString());
-        //TODO: does "mapreduce.workflow.dir" need any other implementation
         wfCopy.set("mapreduce.workflow.dir", submitWfDir.toString());
 
         WorkflowStatus status = null;
+        // generate scheduling plan
+        ClusterStatus clusterStatus = 
+          workflowSubmitClient.getClusterStatus();
+        // it is current a mix of map and reduce slots
+        int maxSlots = clusterStatus.getMaxMapTasks()
+                     + clusterStatus.getMaxReduceTasks();
+        wfCopy.generatePlan(maxSlots);
+
         System.out.println("Before copyAndConfigureFiles");
         copyAndConfigureFiles(wfCopy, submitWfDir);
         System.out.println("Before workflowSubmitClient.submitWorkflow");
-        //TODO: the status needs to record the submitWfDir so that the mappers
-        //knows where to find the jar file
         status = workflowSubmitClient.submitWorkflow(
             wfid, submitWfDir.toString(), ugi.getShortUserName());
 

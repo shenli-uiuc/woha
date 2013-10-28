@@ -36,6 +36,7 @@ public class WorkflowStatus implements Writable, Cloneable {
   private JobID submitterID;
   private int runState;
   private long submitTime;
+  private long schedWork;
 
   // dependant set of a given job
   private Hashtable<String, HashSet<String> > deps;
@@ -89,6 +90,7 @@ public class WorkflowStatus implements Writable, Cloneable {
     this.preCounts = new Hashtable<String, Integer>();
     this.schedTime = new Hashtable<String, Long>();
     this.submitterID = null;
+    this.schedWork = 0;
     setActiveJobs(conf.cloneActiveJobs());
     LOG.info("Shen Li: activeJobs " + conf.cloneActiveJobs().size() +
               ", " + activeJobs.size());
@@ -227,6 +229,18 @@ public class WorkflowStatus implements Writable, Cloneable {
     }
   }
 
+  public void addSchedWork(long work) {
+    synchronized (this) {
+      this.schedWork += work;
+    }
+  }
+
+  public long getSchedWork() {
+    synchronized (this) {
+      return this.schedWork;
+    }
+  }
+
   public boolean addScheduledWJob(String name) {
     synchronized (this) {
       if (scheduledJobs.contains(name)) {
@@ -362,6 +376,7 @@ public class WorkflowStatus implements Writable, Cloneable {
     wfid.write(out);
     out.writeInt(runState);
     out.writeLong(submitTime);
+    out.writeLong(schedWork);
 
     //write deps
     out.writeInt(deps.size());
@@ -444,7 +459,8 @@ public class WorkflowStatus implements Writable, Cloneable {
     wfid.readFields(in);
     runState = in.readInt();
     submitTime = in.readLong();
-  
+    schedWork = in.readLong();
+
     System.out.println("RRRRRRRRRRRRRRRRRRRRRRRRRRR: in workflowStatus readFields");
 
     int size = 0;
