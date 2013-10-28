@@ -1,0 +1,37 @@
+<project name="SlotHolder" default="all" basedir=".">
+
+  <path id="hadoop-core">
+    <fileset dir="../">
+      <include name="hadoop-core-1.2.1.jar"/>
+    </fileset>
+  </path>
+
+  <path id="apache-commons-logging">
+    <fileset dir="../lib/">
+      <include name="commons-logging-1.1.1.jar"/>
+    </fileset>
+  </path>
+
+  <target name="all" depends="genjar, compile, genappjar">
+  </target>
+
+  <target name="genjar">
+    <jar destfile="../hadoop-core-1.2.1.jar" basedir="../build/classes"/>
+  </target>
+
+  <target name="genappjar">
+    <jar destfile="./slotholder.jar" basedir="./build/"/>
+  </target>
+
+  <target name="compile" depends="newbuild">
+    <javac srcdir="." destdir="build">
+      <classpath refid="hadoop-core"/>
+      <classpath refid="apache-commons-logging"/>
+    </javac>
+  </target>
+
+  <target name="newbuild">
+    <delete dir="build"/>
+    <mkdir dir="build"/>
+  </target>
+</project>

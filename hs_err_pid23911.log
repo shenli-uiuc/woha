@@ -1,0 +1,486 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0xb62b2ef8, pid=23911, tid=3085863824
+#
+# JRE version: 6.0_24-b24
+# Java VM: OpenJDK Client VM (20.0-b12 mixed mode linux-x86 )
+# Derivative: IcedTea6 1.11.9
+# Distribution: CentOS release 5.9 (Final), package rhel-1.36.1.11.9.el5_9-i386
+# Problematic frame:
+# J  java.text.DigitList.getLong()J
+#
+# If you would like to submit a bug report, please include
+# instructions how to reproduce the bug and visit:
+#   http://icedtea.classpath.org/bugzilla
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x083f5c00):  JavaThread "main" [_thread_in_Java, id=23913, stack(0xb7e98000,0xb7ee9000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=128 (), si_addr=0x00000000
+
+Registers:
+EAX=0x00000004, EBX=0x00000000, ECX=0x9ca76360, EDX=0x00000009
+ESP=0xb7ee6d20, EBP=0xb7ee6d98, ESI=0x9cad5140, EDI=0x00000004
+EIP=0xb62b2ef8, EFLAGS=0x00010246, CR2=0xb7f02100
+
+Top of Stack: (sp=0xb7ee6d20)
+0xb7ee6d20:   00000000 00000004 b7ee6d98 b5e6604d
+0xb7ee6d30:   92115e98 9c9f2ef8 9c9f2f28 9ca76360
+0xb7ee6d40:   00000001 00000004 9ca76360 9cad5140
+0xb7ee6d50:   000000bc b5e6604d 00000009 9cad5140
+0xb7ee6d60:   00000001 9c9f2f28 b7ee6d98 b5e65f03
+0xb7ee6d70:   b5e65f03 9ca76360 b7ee6d78 b23fea19
+0xb7ee6d80:   b7ee6dc4 b2402d98 00000000 b23feb98
+0xb7ee6d90:   b7ee6d74 b7ee6dbc b7ee6de8 b5e65f87 
+
+Instructions: (pc=0xb62b2ef8)
+0xb62b2ed8:   00 8b 10 85 d2 0f 84 0a 00 00 00 f0 0f b1 11 0f
+0xb62b2ee8:   85 d2 03 00 00 8b 4c 24 28 8b 41 0c 8b 74 24 2c
+0xb62b2ef8:   e9 13 01 00 00 66 66 90 89 44 24 30 8d 54 24 38
+0xb62b2f08:   89 72 04 8b 06 8b d8 83 e3 07 83 fb 05 0f 85 89 
+
+Register to memory mapping:
+
+EAX=0x00000004 is an unknown value
+EBX=0x00000000 is an unknown value
+ECX=0x9ca76360 is an oop
+java.text.DigitList 
+ - klass: 'java/text/DigitList'
+EDX=0x00000009 is an unknown value
+ESP=0xb7ee6d20 is pointing into the stack for thread: 0x083f5c00
+EBP=0xb7ee6d98 is pointing into the stack for thread: 0x083f5c00
+ESI=0x9cad5140 is an oop
+java.lang.StringBuffer 
+ - klass: 'java/lang/StringBuffer'
+EDI=0x00000004 is an unknown value
+
+
+Stack: [0xb7e98000,0xb7ee9000],  sp=0xb7ee6d20,  free space=315k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+J  java.text.DigitList.getLong()J
+j  java.text.SimpleDateFormat.subParse(Ljava/lang/String;IIIZ[ZLjava/text/ParsePosition;)I+157
+J  java.text.SimpleDateFormat.parse(Ljava/lang/String;Ljava/text/ParsePosition;)Ljava/util/Date;
+j  org.apache.ivy.plugins.report.XmlReportParser$SaxXmlReportParser$XmlReportParserHandler.startElement(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/xml/sax/Attributes;)V+353
+J  com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(Lcom/sun/org/apache/xerces/internal/xni/QName;Lcom/sun/org/apache/xerces/internal/xni/XMLAttributes;Lcom/sun/org/apache/xerces/internal/xni/Augmentations;)V
+j  com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(Lcom/sun/org/apache/xerces/internal/xni/parser/XMLInputSource;)V+29
+j  com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(Lcom/sun/org/apache/xerces/internal/xni/parser/XMLInputSource;)V+9
+j  com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(Lorg/xml/sax/InputSource;)V+43
+j  com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(Lorg/xml/sax/InputSource;)V+43
+j  javax.xml.parsers.SAXParser.parse(Lorg/xml/sax/InputSource;Lorg/xml/sax/helpers/DefaultHandler;)V+53
+j  javax.xml.parsers.SAXParser.parse(Ljava/io/File;Lorg/xml/sax/helpers/DefaultHandler;)V+32
+j  org.apache.ivy.plugins.report.XmlReportParser$SaxXmlReportParser.parse()V+21
+j  org.apache.ivy.plugins.report.XmlReportParser.parse(Ljava/io/File;)V+58
+j  org.apache.ivy.core.retrieve.RetrieveEngine.determineArtifactsToCopy(Lorg/apache/ivy/core/module/id/ModuleRevisionId;Ljava/lang/String;Lorg/apache/ivy/core/retrieve/RetrieveOptions;)Ljava/util/Map;+137
+j  org.apache.ivy.core.retrieve.RetrieveEngine.retrieve(Lorg/apache/ivy/core/module/id/ModuleRevisionId;Ljava/lang/String;Lorg/apache/ivy/core/retrieve/RetrieveOptions;)I+272
+j  org.apache.ivy.Ivy.retrieve(Lorg/apache/ivy/core/module/id/ModuleRevisionId;Ljava/lang/String;Lorg/apache/ivy/core/retrieve/RetrieveOptions;)I+11
+j  org.apache.ivy.ant.IvyRetrieve.doExecute()V+164
+j  org.apache.ivy.ant.IvyTask.execute()V+5
+j  org.apache.tools.ant.UnknownElement.execute()V+58
+j  sun.reflect.GeneratedMethodAccessor4.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+36
+J  sun.reflect.DelegatingMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+j  org.apache.tools.ant.Task.perform()V+22
+j  org.apache.tools.ant.Target.execute()V+155
+j  org.apache.tools.ant.Target.performTasks()V+11
+j  org.apache.tools.ant.Project.executeSortedTargets(Ljava/util/Vector;)V+145
+j  org.apache.tools.ant.helper.SingleCheckExecutor.executeTargets(Lorg/apache/tools/ant/Project;[Ljava/lang/String;)V+11
+j  org.apache.tools.ant.Project.executeTargets(Ljava/util/Vector;)V+29
+j  org.apache.tools.ant.taskdefs.Ant.execute()V+684
+j  org.apache.tools.ant.taskdefs.SubAnt.execute(Ljava/io/File;Ljava/io/File;)V+134
+j  org.apache.tools.ant.taskdefs.SubAnt.execute()V+169
+j  org.apache.tools.ant.UnknownElement.execute()V+58
+j  sun.reflect.GeneratedMethodAccessor4.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+36
+J  sun.reflect.DelegatingMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+j  org.apache.tools.ant.Task.perform()V+22
+j  org.apache.tools.ant.Target.execute()V+155
+j  org.apache.tools.ant.Target.performTasks()V+11
+j  org.apache.tools.ant.Project.executeSortedTargets(Ljava/util/Vector;)V+145
+j  org.apache.tools.ant.helper.SingleCheckExecutor.executeTargets(Lorg/apache/tools/ant/Project;[Ljava/lang/String;)V+11
+j  org.apache.tools.ant.Project.executeTargets(Ljava/util/Vector;)V+29
+j  org.apache.tools.ant.taskdefs.Ant.execute()V+684
+j  org.apache.tools.ant.taskdefs.SubAnt.execute(Ljava/io/File;Ljava/io/File;)V+134
+j  org.apache.tools.ant.taskdefs.SubAnt.execute()V+169
+j  org.apache.tools.ant.UnknownElement.execute()V+58
+j  sun.reflect.GeneratedMethodAccessor4.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+36
+J  sun.reflect.DelegatingMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+j  org.apache.tools.ant.Task.perform()V+22
+j  org.apache.tools.ant.Target.execute()V+155
+j  org.apache.tools.ant.Target.performTasks()V+11
+j  org.apache.tools.ant.Project.executeSortedTargets(Ljava/util/Vector;)V+145
+j  org.apache.tools.ant.Project.executeTarget(Ljava/lang/String;)V+27
+j  org.apache.tools.ant.helper.DefaultExecutor.executeTargets(Lorg/apache/tools/ant/Project;[Ljava/lang/String;)V+17
+j  org.apache.tools.ant.Project.executeTargets(Ljava/util/Vector;)V+29
+j  org.apache.tools.ant.Main.runBuild(Ljava/lang/ClassLoader;)V+442
+j  org.apache.tools.ant.Main.startAnt([Ljava/lang/String;Ljava/util/Properties;Ljava/lang/ClassLoader;)V+84
+j  org.apache.tools.ant.launch.Launcher.run([Ljava/lang/String;)I+694
+j  org.apache.tools.ant.launch.Launcher.main([Ljava/lang/String;)V+10
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x22c029]  AsyncGetCallTrace+0x78299
+V  [libjvm.so+0x3590a9]  numa_error+0x229
+V  [libjvm.so+0x22b00f]  AsyncGetCallTrace+0x7727f
+V  [libjvm.so+0x236e7f]  JNI_GetDefaultJavaVMInitArgs+0x109f
+V  [libjvm.so+0x24d6df]  JNI_CreateJavaVM+0x1667f
+C  [java+0x2dbb]  JavaMain+0xdcb
+C  [libpthread.so.0+0x5832]  abort@@GLIBC_2.0+0x5832
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x08729400 JavaThread "Keep-Alive-Timer" daemon [_thread_blocked, id=24437, stack(0x91360000,0x913b1000)]
+  0x91500c00 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=23919, stack(0x914af000,0x91500000)]
+  0x08461c00 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=23918, stack(0x91629000,0x916aa000)]
+  0x08460400 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=23917, stack(0x916aa000,0x916fb000)]
+  0x0844d800 JavaThread "Finalizer" daemon [_thread_blocked, id=23916, stack(0x918fb000,0x9194c000)]
+  0x0844bc00 JavaThread "Reference Handler" daemon [_thread_blocked, id=23915, stack(0x9194c000,0x9199d000)]
+=>0x083f5c00 JavaThread "main" [_thread_in_Java, id=23913, stack(0xb7e98000,0xb7ee9000)]
+
+Other Threads:
+  0x08449000 VMThread [stack: 0x9199d000,0x91a1e000] [id=23914]
+  0x91503400 WatcherThread [stack: 0x9142e000,0x914af000] [id=23920]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 12928K, used 4035K [0x91de0000, 0x92be0000, 0x9c880000)
+  eden space 11520K,  29% used [0x91de0000, 0x92130788, 0x92920000)
+  from space 1408K,  45% used [0x92920000, 0x929c05f0, 0x92a80000)
+  to   space 1408K,   0% used [0x92a80000, 0x92a80000, 0x92be0000)
+ tenured generation   total 28640K, used 21552K [0x9c880000, 0x9e478000, 0xb1de0000)
+   the space 28640K,  75% used [0x9c880000, 0x9dd8c0b8, 0x9dd8c200, 0x9e478000)
+ compacting perm gen  total 15104K, used 15088K [0xb1de0000, 0xb2ca0000, 0xb5de0000)
+   the space 15104K,  99% used [0xb1de0000, 0xb2c9c070, 0xb2c9c200, 0xb2ca0000)
+No shared spaces configured.
+
+Code Cache  [0xb5e63000, 0xb62bb000, 0xb7e63000)
+ total_blobs=1980 nmethods=1835 adapters=80 free_code_cache=29030720 largest_free_block=384
+
+Dynamic libraries:
+00110000-00125000 r-xp 00000000 fd:00 3309804    /lib/libnsl-2.5.so
+00125000-00126000 r-xp 00014000 fd:00 3309804    /lib/libnsl-2.5.so
+00126000-00127000 rwxp 00015000 fd:00 3309804    /lib/libnsl-2.5.so
+00127000-00129000 rwxp 00127000 00:00 0 
+00129000-0012f000 r-xp 00000000 fd:00 1287531    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libzip.so
+0012f000-00130000 rwxp 00005000 fd:00 1287531    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libzip.so
+00130000-00143000 r-xp 00000000 fd:00 1278258    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libnet.so
+00143000-00144000 rwxp 00013000 fd:00 1278258    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libnet.so
+00195000-001a1000 r-xp 00000000 fd:00 1281381    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libverify.so
+001a1000-001a2000 rwxp 0000b000 fd:00 1281381    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libverify.so
+0043f000-0045a000 r-xp 00000000 fd:00 3309625    /lib/ld-2.5.so
+0045a000-0045b000 r-xp 0001a000 fd:00 3309625    /lib/ld-2.5.so
+0045b000-0045c000 rwxp 0001b000 fd:00 3309625    /lib/ld-2.5.so
+0045e000-00485000 r-xp 00000000 fd:00 3309636    /lib/libm-2.5.so
+00485000-00486000 r-xp 00026000 fd:00 3309636    /lib/libm-2.5.so
+00486000-00487000 rwxp 00027000 fd:00 3309636    /lib/libm-2.5.so
+00489000-0048c000 r-xp 00000000 fd:00 3309632    /lib/libdl-2.5.so
+0048c000-0048d000 r-xp 00002000 fd:00 3309632    /lib/libdl-2.5.so
+0048d000-0048e000 rwxp 00003000 fd:00 3309632    /lib/libdl-2.5.so
+00497000-005ea000 r-xp 00000000 fd:00 3309788    /lib/libc-2.5.so
+005ea000-005ec000 r-xp 00153000 fd:00 3309788    /lib/libc-2.5.so
+005ec000-005ed000 rwxp 00155000 fd:00 3309788    /lib/libc-2.5.so
+005ed000-005f0000 rwxp 005ed000 00:00 0 
+005f2000-00607000 r-xp 00000000 fd:00 3309840    /lib/libpthread-2.5.so
+00607000-00608000 r-xp 00015000 fd:00 3309840    /lib/libpthread-2.5.so
+00608000-00609000 rwxp 00016000 fd:00 3309840    /lib/libpthread-2.5.so
+00609000-0060b000 rwxp 00609000 00:00 0 
+0060d000-0061f000 r-xp 00000000 fd:00 3309645    /lib/libz.so.1.2.3
+0061f000-00620000 rwxp 00011000 fd:00 3309645    /lib/libz.so.1.2.3
+0072f000-00732000 r-xp 00000000 fd:00 1278212    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/jli/libjli.so
+00732000-00733000 rwxp 00003000 fd:00 1278212    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/jli/libjli.so
+00868000-0086f000 r-xp 00000000 fd:00 3310496    /lib/librt-2.5.so
+0086f000-00870000 r-xp 00007000 fd:00 3310496    /lib/librt-2.5.so
+00870000-00871000 rwxp 00008000 fd:00 3310496    /lib/librt-2.5.so
+00953000-0095e000 r-xp 00000000 fd:00 3313346    /lib/libgcc_s-4.1.2-20080825.so.1
+0095e000-0095f000 rwxp 0000a000 fd:00 3313346    /lib/libgcc_s-4.1.2-20080825.so.1
+009ad000-00a8d000 r-xp 00000000 fd:00 864060     /usr/lib/libstdc++.so.6.0.8
+00a8d000-00a91000 r-xp 000df000 fd:00 864060     /usr/lib/libstdc++.so.6.0.8
+00a91000-00a92000 rwxp 000e3000 fd:00 864060     /usr/lib/libstdc++.so.6.0.8
+00a92000-00a98000 rwxp 00a92000 00:00 0 
+00ad4000-00af6000 r-xp 00000000 fd:00 1278247    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libjava.so
+00af6000-00af8000 rwxp 00022000 fd:00 1278247    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/libjava.so
+00cbc000-00cbd000 r-xp 00cbc000 00:00 0          [vdso]
+00cbd000-0115c000 r-xp 00000000 fd:00 1278229    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/client/libjvm.so
+0115c000-01180000 rwxp 0049f000 fd:00 1278229    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/client/libjvm.so
+01180000-01597000 rwxp 01180000 00:00 0 
+08048000-08051000 r-xp 00000000 fd:00 1278256    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/bin/java
+08051000-08053000 rwxp 00008000 fd:00 1278256    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/bin/java
+083f0000-087d1000 rwxp 083f0000 00:00 0          [heap]
+8fc00000-8fcfa000 rwxp 8fc00000 00:00 0 
+8fcfa000-8fd00000 --xp 8fcfa000 00:00 0 
+8fe00000-8feff000 rwxp 8fe00000 00:00 0 
+8feff000-8ff00000 --xp 8feff000 00:00 0 
+90000000-900fe000 rwxp 90000000 00:00 0 
+900fe000-90100000 --xp 900fe000 00:00 0 
+90100000-901fa000 rwxp 90100000 00:00 0 
+901fa000-90200000 --xp 901fa000 00:00 0 
+90200000-902ff000 rwxp 90200000 00:00 0 
+902ff000-90300000 --xp 902ff000 00:00 0 
+90300000-903fc000 rwxp 90300000 00:00 0 
+903fc000-90400000 --xp 903fc000 00:00 0 
+90400000-904ff000 rwxp 90400000 00:00 0 
+904ff000-90500000 --xp 904ff000 00:00 0 
+90500000-905ff000 rwxp 90500000 00:00 0 
+905ff000-90600000 --xp 905ff000 00:00 0 
+90600000-906fd000 rwxp 90600000 00:00 0 
+906fd000-90700000 --xp 906fd000 00:00 0 
+9076b000-9076f000 r-xs 00032000 00:1c 1246208    /home/tarek/shenli3/.ivy2/cache/org.vafer/jdeb/maven-plugins/jdeb-0.8.jar
+9076f000-907d4000 r-xs 0081d000 00:1c 1218196    /home/tarek/shenli3/.ivy2/cache/org.aspectj/aspectjtools/jars/aspectjtools-1.6.11.jar
+907d4000-907d8000 r-xs 00019000 00:1c 1246207    /home/tarek/shenli3/.ivy2/cache/org.aspectj/aspectjrt/jars/aspectjrt-1.6.11.jar
+907d8000-907db000 r-xs 0002b000 00:1c 1218195    /home/tarek/shenli3/.ivy2/cache/com.jcraft/jsch/jars/jsch-0.1.42.jar
+907db000-907f8000 r-xs 0013e000 00:1c 1312936    /home/tarek/shenli3/.ivy2/cache/org.mockito/mockito-all/jars/mockito-all-1.8.5.jar
+907f8000-907fc000 r-xs 00034000 00:1c 1671570    /home/tarek/shenli3/.ivy2/cache/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.8.8.jar
+907fc000-90809000 r-xs 00097000 00:1c 1278620    /home/tarek/shenli3/.ivy2/cache/org.codehaus.jackson/jackson-mapper-asl/jars/jackson-mapper-asl-1.8.8.jar
+90809000-9080b000 r-xs 00001000 00:1c 1246206    /home/tarek/shenli3/.ivy2/cache/org.slf4j/slf4j-log4j12/jars/slf4j-log4j12-1.4.3.jar
+9080b000-9080d000 r-xs 0000e000 00:1c 1019777    /home/tarek/shenli3/.ivy2/cache/oro/oro/jars/oro-2.0.8.jar
+9080d000-90830000 r-xs 00344000 00:1c 987021     /home/tarek/shenli3/.ivy2/cache/org.eclipse.jdt/core/jars/core-3.1.1.jar
+90830000-90831000 r-xs 00003000 00:1c 950872     /home/tarek/shenli3/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.4.3.jar
+90831000-90833000 r-xs 00005000 00:1c 918872     /home/tarek/shenli3/.ivy2/cache/commons-logging/commons-logging-api/jars/commons-logging-api-1.0.4.jar
+90833000-90839000 r-xs 0002b000 00:1c 950868     /home/tarek/shenli3/.ivy2/cache/junit/junit/jars/junit-4.5.jar
+90839000-9084a000 r-xs 000bb000 00:1c 918871     /home/tarek/shenli3/.ivy2/cache/org.apache.commons/commons-math/jars/commons-math-2.1.jar
+9084a000-9084e000 r-xs 0002f000 00:1c 1420532    /home/tarek/shenli3/.ivy2/cache/commons-beanutils/commons-beanutils-core/jars/commons-beanutils-core-1.8.0.jar
+9084e000-90853000 r-xs 0002a000 00:1c 1638628    /home/tarek/shenli3/.ivy2/cache/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.7.0.jar
+90853000-90857000 r-xs 00020000 00:1c 1381118    /home/tarek/shenli3/.ivy2/cache/commons-digester/commons-digester/jars/commons-digester-1.8.jar
+90857000-90859000 r-xs 0000d000 00:1c 1343842    /home/tarek/shenli3/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar
+90859000-9085d000 r-xs 0003c000 00:1c 1312937    /home/tarek/shenli3/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.4.jar
+9085d000-9086b000 r-xs 0007f000 00:1c 1278621    /home/tarek/shenli3/.ivy2/cache/commons-collections/commons-collections/jars/commons-collections-3.2.1.jar
+9086b000-90871000 r-xs 00043000 00:1c 819313     /home/tarek/shenli3/.ivy2/cache/commons-configuration/commons-configuration/jars/commons-configuration-1.6.jar
+90871000-90874000 r-xs 00019000 00:1c 819312     /home/tarek/shenli3/.ivy2/cache/commons-el/commons-el/jars/commons-el-1.0.jar
+90874000-90879000 r-xs 0005e000 00:1c 918870     /home/tarek/shenli3/.ivy2/cache/tomcat/jasper-compiler/jars/jasper-compiler-5.5.12.jar
+90879000-9087b000 r-xs 00011000 00:1c 1671468    /home/tarek/shenli3/.ivy2/cache/tomcat/jasper-runtime/jars/jasper-runtime-5.5.12.jar
+9087b000-9088c000 r-xs 00099000 00:1c 655661     /home/tarek/shenli3/.ivy2/cache/com.sun.jersey/jersey-server/bundles/jersey-server-1.8.jar
+9088c000-90890000 r-xs 00021000 00:1c 819311     /home/tarek/shenli3/.ivy2/cache/com.sun.jersey/jersey-json/bundles/jersey-json-1.8.jar
+90890000-9089a000 r-xs 00066000 00:1c 655660     /home/tarek/shenli3/.ivy2/cache/com.sun.jersey/jersey-core/bundles/jersey-core-1.8.jar
+9089a000-9089b000 r-xs 0000a000 00:1c 1019775    /home/tarek/shenli3/.ivy2/cache/asm/asm/jars/asm-3.2.jar
+9089b000-9089d000 r-xs 0001f000 00:1c 984873     /home/tarek/shenli3/.ivy2/cache/org.mortbay.jetty/servlet-api/jars/servlet-api-2.5-20081211.jar
+9089d000-908a1000 r-xs 00028000 00:1c 524748     /home/tarek/shenli3/.ivy2/cache/org.mortbay.jetty/jetty-util/jars/jetty-util-6.1.26.jar
+908a1000-908a8000 r-xs 0007d000 00:1c 950867     /home/tarek/shenli3/.ivy2/cache/org.mortbay.jetty/jetty/jars/jetty-6.1.26.jar
+908a8000-908ad000 r-xs 0003e000 00:1c 460051     /home/tarek/shenli3/.ivy2/cache/commons-net/commons-net/jars/commons-net-3.1.jar
+908ad000-908b2000 r-xs 0004a000 00:1c 886745     /home/tarek/shenli3/.ivy2/cache/net.java.dev.jets3t/jets3t/jars/jets3t-0.6.1.jar
+908b2000-908b4000 r-xs 00002000 00:1c 460050     /home/tarek/shenli3/.ivy2/cache/commons-daemon/commons-daemon/jars/commons-daemon-1.0.1.jar
+908b4000-908b5000 r-xs 00003000 00:1c 819310     /home/tarek/shenli3/.ivy2/cache/xmlenc/xmlenc/jars/xmlenc-0.52.jar
+908b5000-908b8000 r-xs 00025000 00:1c 524747     /home/tarek/shenli3/.ivy2/cache/commons-io/commons-io/jars/commons-io-2.1.jar
+908b8000-908ba000 r-xs 00009000 00:1c 1278619    /home/tarek/shenli3/.ivy2/cache/commons-cli/commons-cli/jars/commons-cli-1.2.jar
+908ba000-908bc000 r-xs 0000d000 00:1c 328183     /home/tarek/shenli3/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.4.jar
+908bc000-908c1000 r-xs 00040000 00:1c 1218194    /home/tarek/shenli3/.ivy2/cache/commons-httpclient/commons-httpclient/jars/commons-httpclient-3.0.1.jar
+908c1000-908c8000 r-xs 00059000 00:1c 655659     /home/tarek/shenli3/.ivy2/cache/log4j/log4j/jars/log4j-1.2.15.jar
+908c8000-908c9000 r-xs 00003000 fd:02 165186     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/xmlenc-0.52.jar
+908c9000-908cb000 r-xs 00001000 fd:02 165185     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/slf4j-log4j12-1.4.3.jar
+908cb000-908cc000 r-xs 00003000 fd:02 165184     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/slf4j-api-1.4.3.jar
+908cc000-908ce000 r-xs 0001f000 fd:02 165183     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/servlet-api-2.5-20081211.jar
+908ce000-908d0000 r-xs 0000e000 fd:02 165182     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/oro-2.0.8.jar
+908d0000-908ed000 r-xs 0013e000 fd:02 165181     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/mockito-all-1.8.5.jar
+908ed000-908f4000 r-xs 00059000 fd:02 165180     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/log4j-1.2.15.jar
+908f4000-908f5000 r-xs 00002000 fd:02 165178     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/kfs-0.2.2.jar
+908f5000-908fb000 r-xs 0002b000 fd:02 165177     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/junit-4.5.jar
+908fb000-908fe000 r-xs 0001e000 fd:02 196611     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jsp-2.1/jsp-api-2.1.jar
+908fe000-9090f000 r-xs 000ea000 fd:02 196610     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jsp-2.1/jsp-2.1.jar
+9090f000-90912000 r-xs 0002b000 fd:02 165176     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jsch-0.1.42.jar
+90912000-90916000 r-xs 00028000 fd:02 165175     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jetty-util-6.1.26.jar
+90916000-9091d000 r-xs 0007d000 fd:02 165174     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jetty-6.1.26.jar
+9091d000-90922000 r-xs 0004a000 fd:02 165173     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jets3t-0.6.1.jar
+90922000-90933000 r-xs 00099000 fd:02 165172     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jersey-server-1.8.jar
+90933000-90937000 r-xs 00021000 fd:02 165171     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jersey-json-1.8.jar
+90937000-90941000 r-xs 00066000 fd:02 165170     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jersey-core-1.8.jar
+90941000-90945000 r-xs 00032000 fd:02 165149     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jdeb-0.8.jar
+90945000-90947000 r-xs 00011000 fd:02 165148     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jasper-runtime-5.5.12.jar
+90947000-9094c000 r-xs 0005e000 fd:02 165147     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jasper-compiler-5.5.12.jar
+9094c000-90959000 r-xs 00097000 fd:02 165146     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jackson-mapper-asl-1.8.8.jar
+90959000-9095d000 r-xs 00034000 fd:02 165145     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/jackson-core-asl-1.8.8.jar
+9095d000-90966000 r-xs 000a4000 fd:02 165144     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/hsqldb-1.8.0.10.jar
+90966000-90967000 r-xs 00002000 fd:02 165142     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/hadoop-thriftfs-1.2.1.jar
+90967000-90969000 r-xs 00010000 fd:02 165141     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/hadoop-fairscheduler-1.2.1.jar
+90969000-9096b000 r-xs 0000d000 fd:02 165140     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/hadoop-capacity-scheduler-1.2.1.jar
+9096b000-9098e000 r-xs 00344000 fd:02 165139     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/core-3.1.1.jar
+9098e000-90993000 r-xs 0003e000 fd:02 165138     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-net-3.1.jar
+90993000-909a4000 r-xs 000bb000 fd:02 165137     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-math-2.1.jar
+909a4000-909a6000 r-xs 00005000 fd:02 165136     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-logging-api-1.0.4.jar
+909a6000-909a8000 r-xs 0000d000 fd:02 165135     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-logging-1.1.1.jar
+909a8000-909ac000 r-xs 0003c000 fd:02 165134     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-lang-2.4.jar
+909ac000-909af000 r-xs 00025000 fd:02 165133     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-io-2.1.jar
+909af000-909b4000 r-xs 00040000 fd:02 165132     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-httpclient-3.0.1.jar
+909b4000-909b7000 r-xs 00019000 fd:02 165131     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-el-1.0.jar
+909b7000-909bb000 r-xs 00020000 fd:02 165130     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-digester-1.8.jar
+909bb000-909bd000 r-xs 00002000 fd:02 165129     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-daemon-1.0.1.jar
+909bd000-909c3000 r-xs 00043000 fd:02 165128     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-configuration-1.6.jar
+909c3000-909d1000 r-xs 0007f000 fd:02 165127     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-collections-3.2.1.jar
+909d1000-909d3000 r-xs 0000d000 fd:02 165126     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-codec-1.4.jar
+909d3000-909d5000 r-xs 00009000 fd:02 165125     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-cli-1.2.jar
+909d5000-909d9000 r-xs 0002f000 fd:02 165124     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-beanutils-core-1.8.0.jar
+909d9000-909de000 r-xs 0002a000 fd:02 165123     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/commons-beanutils-1.7.0.jar
+909de000-90a43000 r-xs 0081d000 fd:02 165122     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/aspectjtools-1.6.11.jar
+90a43000-90a47000 r-xs 00019000 fd:02 165121     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/aspectjrt-1.6.11.jar
+90a47000-90a48000 r-xs 0000a000 fd:02 165120     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/lib/asm-3.2.jar
+90a48000-90a83000 r-xs 003e8000 fd:02 68364      /mounts/tareka05/disks/0/scratch/shenli3/project/woha/build/hadoop-core-1.2.2-SNAPSHOT.jar
+90a83000-90a8e000 r-xs 00079000 fd:02 230463     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/src/test/lib/mina-core-2.0.0-M2-20080407.124109-12.jar
+90a8e000-90a90000 r-xs 00003000 fd:02 230462     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/src/test/lib/ftpserver-server-1.0.0-SNAPSHOT.jar
+90a90000-90a98000 r-xs 00053000 fd:00 1278303    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/resources.jar
+90a98000-90acd000 r-xs 00000000 fd:01 131079     /var/db/nscd/hosts
+90acd000-9115e000 rwxp 90acd000 00:00 0 
+9115e000-91161000 --xp 9115e000 00:00 0 
+91161000-911af000 rwxp 91161000 00:00 0 
+911af000-911b2000 --xp 911af000 00:00 0 
+911b2000-912ff000 rwxp 911b2000 00:00 0 
+912ff000-91300000 --xp 912ff000 00:00 0 
+91300000-9130f000 r-xs 000d0000 fd:02 165116     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/ivy/ivy-2.1.0.jar
+9130f000-91312000 --xp 9130f000 00:00 0 
+91312000-91360000 rwxp 91312000 00:00 0 
+91360000-91363000 --xp 91360000 00:00 0 
+91363000-913b1000 rwxp 91363000 00:00 0 
+913b1000-91410000 r-xs 005a7000 fd:00 2101605    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/lib/tools.jar
+91410000-9142e000 r-xs 001bb000 00:1c 12812745   /home/tarek/shenli3/software/ant/lib/ant.jar
+9142e000-9142f000 --xp 9142e000 00:00 0 
+9142f000-914af000 rwxp 9142f000 00:00 0 
+914af000-914b2000 --xp 914af000 00:00 0 
+914b2000-915fb000 rwxp 914b2000 00:00 0 
+915fb000-91600000 --xp 915fb000 00:00 0 
+91600000-91605000 r-xs 00035000 fd:02 230461     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/src/test/lib/ftpserver-core-1.0.0-SNAPSHOT.jar
+91605000-91607000 r-xs 00003000 fd:02 230460     /mounts/tareka05/disks/0/scratch/shenli3/project/woha/src/test/lib/ftplet-api-1.0.0-SNAPSHOT.jar
+91607000-91609000 r-xs 00008000 00:1c 12812750   /home/tarek/shenli3/software/ant/lib/ant-apache-oro.jar
+91609000-9160b000 r-xs 00001000 00:1c 12812749   /home/tarek/shenli3/software/ant/lib/ant-apache-bcel.jar
+9160b000-9160d000 r-xs 00013000 00:1c 12812743   /home/tarek/shenli3/software/ant/lib/ant-commons-net.jar
+9160d000-9160e000 r-xs 00001000 00:1c 12812737   /home/tarek/shenli3/software/ant/lib/ant-junit4.jar
+9160e000-9160f000 r-xs 00001000 00:1c 12812735   /home/tarek/shenli3/software/ant/lib/ant-antlr.jar
+9160f000-91610000 r-xs 00000000 00:1c 12812734   /home/tarek/shenli3/software/ant/lib/ant-apache-regexp.jar
+91610000-91612000 r-xs 00004000 00:1c 12812731   /home/tarek/shenli3/software/ant/lib/ant-jai.jar
+91612000-91613000 r-xs 00001000 00:1c 12812726   /home/tarek/shenli3/software/ant/lib/ant-jmf.jar
+91613000-91614000 r-xs 00001000 00:1c 12812725   /home/tarek/shenli3/software/ant/lib/ant-javamail.jar
+91614000-91615000 r-xs 00002000 00:1c 12812724   /home/tarek/shenli3/software/ant/lib/ant-netrexx.jar
+91615000-91616000 r-xs 00001000 00:1c 12812723   /home/tarek/shenli3/software/ant/lib/ant-swing.jar
+91616000-91617000 r-xs 00000000 00:1c 12812721   /home/tarek/shenli3/software/ant/lib/ant-apache-bsf.jar
+91617000-91618000 r-xs 00000000 00:1c 12812720   /home/tarek/shenli3/software/ant/lib/ant-apache-resolver.jar
+91618000-91619000 r-xs 00000000 00:1c 12812716   /home/tarek/shenli3/software/ant/lib/ant-apache-log4j.jar
+91619000-9161b000 r-xs 00001000 00:1c 12812715   /home/tarek/shenli3/software/ant/lib/ant-jdepend.jar
+9161b000-9161c000 r-xs 00003000 00:1c 12812714   /home/tarek/shenli3/software/ant/lib/ant-testutil.jar
+9161c000-9161e000 r-xs 00017000 00:1c 12812711   /home/tarek/shenli3/software/ant/lib/ant-junit.jar
+9161e000-91625000 r-xs 000ba000 00:1c 1605687    /home/tarek/shenli3/lib/mysql-connector-java-5.1.17-bin.jar
+91625000-91629000 r-xs 0003b000 fd:00 1278232    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/jsse.jar
+91629000-9162c000 --xp 91629000 00:00 0 
+9162c000-916aa000 rwxp 9162c000 00:00 0 
+916aa000-916ad000 --xp 916aa000 00:00 0 
+916ad000-916fb000 rwxp 916ad000 00:00 0 
+916fb000-918fb000 r-xp 00000000 fd:00 1345533    /usr/lib/locale/locale-archive
+918fb000-918fe000 --xp 918fb000 00:00 0 
+918fe000-9194c000 rwxp 918fe000 00:00 0 
+9194c000-9194f000 --xp 9194c000 00:00 0 
+9194f000-9199d000 rwxp 9194f000 00:00 0 
+9199d000-9199e000 --xp 9199d000 00:00 0 
+9199e000-91a53000 rwxp 9199e000 00:00 0 
+91a53000-91bf3000 r-xs 01985000 fd:00 1278306    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar
+91bf3000-91bfb000 rwxp 91bf3000 00:00 0 
+91bfb000-91c14000 rwxp 91bfb000 00:00 0 
+91c14000-91c22000 rwxp 91c14000 00:00 0 
+91c22000-91cbf000 rwxp 91c22000 00:00 0 
+91cbf000-91cc6000 rwxp 91cbf000 00:00 0 
+91cc6000-91d14000 rwxp 91cc6000 00:00 0 
+91d14000-91d23000 rwxp 91d14000 00:00 0 
+91d23000-91dbf000 rwxp 91d23000 00:00 0 
+91dbf000-91dc7000 rwxp 91dbf000 00:00 0 
+91dc7000-91ddf000 rwxp 91dc7000 00:00 0 
+91ddf000-92be0000 rwxp 91ddf000 00:00 0 
+92be0000-9c880000 rwxp 92be0000 00:00 0 
+9c880000-9e478000 rwxp 9c880000 00:00 0 
+9e478000-b1de0000 rwxp 9e478000 00:00 0 
+b1de0000-b2ca0000 rwxp b1de0000 00:00 0 
+b2ca0000-b5de0000 rwxp b2ca0000 00:00 0 
+b5de0000-b5de1000 r-xs 00000000 00:1c 12812709   /home/tarek/shenli3/software/ant/lib/ant-commons-logging.jar
+b5de1000-b5de2000 r-xs 00000000 00:1c 12812708   /home/tarek/shenli3/software/ant/lib/ant-apache-xalan2.jar
+b5de2000-b5de3000 r-xs 00009000 00:1c 12812707   /home/tarek/shenli3/software/ant/lib/ant-jsch.jar
+b5de3000-b5df5000 rwxp b5de3000 00:00 0 
+b5df5000-b5e63000 rwxp b5df5000 00:00 0 
+b5e63000-b62bb000 rwxp b5e63000 00:00 0 
+b62bb000-b7e63000 rw-p b62bb000 00:00 0 
+b7e63000-b7e98000 r--s 00000000 fd:01 131077     /var/db/nscd/passwd
+b7e98000-b7e9b000 ---p b7e98000 00:00 0 
+b7e9b000-b7eeb000 rw-p b7e9b000 00:00 0 
+b7eeb000-b7eed000 r--s 00014000 00:1c 12223256   /home/tarek/shenli3/lib/servlet-api.jar
+b7eed000-b7eef000 r--s 00002000 00:1c 12812722   /home/tarek/shenli3/software/ant/lib/ant-launcher.jar
+b7eef000-b7ef8000 r--s 00060000 fd:00 1278211    /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/ext/gnome-java-bridge.jar
+b7ef8000-b7ef9000 r--p 0103b000 fd:00 1345533    /usr/lib/locale/locale-archive
+b7ef9000-b7f01000 rw-s 00000000 fd:00 1976222    /tmp/hsperfdata_shenli3/23911
+b7f01000-b7f02000 rw-p b7f01000 00:00 0 
+b7f02000-b7f03000 r--p b7f02000 00:00 0 
+b7f03000-b7f04000 rw-p b7f03000 00:00 0 
+bf906000-bf91b000 rw-p bffe9000 00:00 0          [stack]
+
+VM Arguments:
+jvm_args: -Dant.home=/home/tarek/shenli3/software/ant -Dant.library.dir=/home/tarek/shenli3/software/ant/lib 
+java_command: org.apache.tools.ant.launch.Launcher -cp .:/scratch/shenli3/software/jython/jython.jar:/home/tarek/shenli3/lib/mysql-connector-java-5.1.17-bin.jar:/home/tarek/shenli3/project/Hermes/lib/*:/home/tarek/shenli3/lib/servlet-api.jar:/home/tarek/shenli3/project/ccnps/lib/* compile
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr
+CLASSPATH=.:/scratch/shenli3/software/jython/jython.jar:/home/tarek/shenli3/lib/mysql-connector-java-5.1.17-bin.jar:/home/tarek/shenli3/project/Hermes/lib/*:/home/tarek/shenli3/lib/servlet-api.jar:/home/tarek/shenli3/project/ccnps/lib/*
+PATH=.:/usr/lib64/qt-3.3/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/opt/dell/srvadmin/bin:/home/tarek/shenli3/shenli/software/apache-ant-1.8.2/bin:/usr/local/bin:/scratch/shenli3/software/mysql-5.5.25-linux2.6-i686/bin:/scratch/shenli3/software/jython/bin:/home/tarek/shenli3/software/ant/bin::/home/tarek/shenli3/bin
+LD_LIBRARY_PATH=/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386/client:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/i386:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/../lib/i386:/usr/lib:
+SHELL=/bin/bash
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x440a20], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x440a20], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x35abc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x35abc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x35abc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x35abc0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x35d7d0], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x35c260], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x35c260], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x35c260], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x35c260], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:CentOS release 5.7 (Final)
+
+uname:Linux 2.6.18-274.17.1.el5 #1 SMP Tue Jan 10 17:26:03 EST 2012 i686
+libc:glibc 2.5 NPTL 2.5 
+rlimit: STACK 10240k, CORE 0k, NPROC 32744, NOFILE 245768, AS infinity
+load average:0.36 0.09 0.03
+
+/proc/meminfo:
+MemTotal:      2073580 kB
+MemFree:       1687876 kB
+Buffers:         66652 kB
+Cached:         134704 kB
+SwapCached:      33344 kB
+Active:         231356 kB
+Inactive:        86460 kB
+HighTotal:     1178152 kB
+HighFree:       926528 kB
+LowTotal:       895428 kB
+LowFree:        761348 kB
+SwapTotal:     1048568 kB
+SwapFree:       977484 kB
+Dirty:            4704 kB
+Writeback:           0 kB
+AnonPages:      114132 kB
+Mapped:          18688 kB
+Slab:            56640 kB
+PageTables:       2268 kB
+NFS_Unstable:        0 kB
+Bounce:              0 kB
+CommitLimit:   2085356 kB
+Committed_AS:   399376 kB
+VmallocTotal:   114680 kB
+VmallocUsed:      5672 kB
+VmallocChunk:   108612 kB
+HugePages_Total:     0
+HugePages_Free:      0
+HugePages_Rsvd:      0
+Hugepagesize:     4096 kB
+
+
+CPU:total 2 (1 cores per cpu, 2 threads per core) family 15 model 4 stepping 3, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ht
+
+Memory: 4k page, physical 2073580k(1687876k free), swap 1048568k(977484k free)
+
+vm_info: OpenJDK Client VM (20.0-b12) for linux-x86 JRE (1.6.0_24-b24), built on Mar  6 2013 15:01:54 by "mockbuild" with gcc 4.1.2 20080704 (Red Hat 4.1.2-54)
+
+time: Tue Oct 22 14:48:19 2013
+elapsed time: 29 seconds
+

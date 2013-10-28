@@ -1,0 +1,8 @@
+added obtainMapTask() to JobInProgress, the WorkflowScheduler should all that method to submit active WJobs now.
+
+check when will status be null in tasktracker
+
+
+give each job a separate submitter may solve the current problem.
+
+sometimes, multiple tasks are assigned at a single assignTask() call
