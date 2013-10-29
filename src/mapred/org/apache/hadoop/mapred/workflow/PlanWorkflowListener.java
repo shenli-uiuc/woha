@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.apache.hadoop.mapred.JobStatusChangeEvent.EventType;
 
@@ -31,137 +33,41 @@ class PlanWorkflowListener extends JobInProgressListener
       implements WorkflowInProgressListener{
 
   public static final Log LOG = JobTracker.LOG;
-  /**
-   * Super class for both WorkflowSchedulingInfo and 
-   * JobSchedulingInfo
-   */
-  static class SchedulingInfo {
-    public SchedulingInfo() {
-    }
+
+  static final Comparator<Object> PROGRESS_COMPARATOR = 
+  new Comparator<Object>() {
 
     /**
-     * WorkflowSchedulingInfo needs to override this
-     * to return the real progress
+     * put jip before wip
      */
-    public long getProgress(long curTime) {
-      return 0;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (null == obj || obj.getClass() != SchedulingInfo.class) {
-        return false;
-      } else if (this == obj) {
-        return true;
-      }
-
-      return false;
-    }
-  }
-
-  static class WorkflowSchedulingInfo extends SchedulingInfo{
-    private WorkflowID wfid;
-    private long deadline;
-    private SchedulingPlan plan;
-    private WorkflowStatus status;
-
-    public WorkflowSchedulingInfo(long deadline,
-                                  SchedulingPlan plan,
-                                  WorkflowStatus status) {
-      this.wfid = status.getWorkflowID();
-      this.status = status;
-      this.plan = plan;
-      this.deadline = deadline;
-    }
-   
-    public WorkflowID getWorkflowID() {
-      return this.wfid;
-    }
-
-    public long getProgress(long curTime) {
-      long ttd = deadline - curTime;
-      long req = plan.getRequirement(ttd);
-      long work = status.getSchedWork();
-      return work - req;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (!super.equals(obj)) {
-        return false;
-      }
-
-      if (null == obj || obj.getClass() != WorkflowSchedulingInfo.class) {
-        return false;
-      } else if (this == obj) {
-        return true;
-      } else if (obj instanceof WorkflowSchedulingInfo) {
-        WorkflowSchedulingInfo that = (WorkflowSchedulingInfo) obj;
-        return this.wfid.equals(that.wfid);
-      }
-
-      return false;
-    }
-
-    @Override
-    public int hashCode() {
-      return (int)(wfid.hashCode() + deadline);
-    }
-
-  }
-
-  /** A class that groups all the information from a {@link JobInProgress} that 
-   * is necessary for scheduling a job.
-   */ 
-  static class JobSchedulingInfo extends SchedulingInfo{
-    private JobPriority priority;
-    private JobID id;
-
-    public JobSchedulingInfo(JobInProgress jip) {
-      this(jip.getStatus());
-    }
-
-    public JobSchedulingInfo(JobStatus status) {
-      priority = status.getJobPriority();
-      id = status.getJobID();
-    }
-
-    JobID getJobID() {return id;}
-  
-    @Override
-    public boolean equals(Object obj) {
-      if (!super.equals(obj)) {
-        return false;
-      }
-  
-      if (obj == null || obj.getClass() != JobSchedulingInfo.class) {
-        return false;
-      } else if (obj == this) {
-        return true;
-      }
-      else if (obj instanceof JobSchedulingInfo) {
-        JobSchedulingInfo that = (JobSchedulingInfo)obj;
-        return (this.id.equals(that.id) && 
-            this.priority == that.priority);
-      }
-      return false;
-    }
-
-    @Override
-    public int hashCode() {
-      return (int)(id.hashCode() * priority.hashCode());
-    }
-
-  }
-
-  static final Comparator<SchedulingInfo> PROGRESS_COMPARATOR = 
-  new Comparator<SchedulingInfo>() {
-    public int compare(SchedulingInfo o1, SchedulingInfo o2) {
+    public int compare(Object o1, Object o2) {
       long curTime = System.currentTimeMillis();
-      if (o1.getProgress(curTime) < o2.getProgress(curTime)) {
-        return -1;
-      } else if(o1.getProgress(curTime) > o2.getProgress(curTime)) {
+      if (o1 instanceof WorkflowInProgress &&
+          o2 instanceof WorkflowInProgress) {
+        WorkflowInProgress wip1 = (WorkflowInProgress) o1;
+        WorkflowInProgress wip2 = (WorkflowInProgress) o2;
+        long work1 = wip1.getStatus().getSchedWork();
+        long work2 = wip2.getStatus().getSchedWork();
+        long req1 = 
+          wip1.getConf().getSchedulingPlan().getRequirement(curTime);
+        long req2 = 
+          wip2.getConf().getSchedulingPlan().getRequirement(curTime);
+        long res1 = work1 - req1;
+        long res2 = work2 - req2;
+
+        if (res1 < res2) {
+          return -1;
+        } else if(res1 > res2) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (o1 instanceof WorkflowInProgress &&
+                 o2 instanceof JobInProgress) {
         return 1;
+      } else if (o1 instanceof JobInProgress &&
+                 o2 instanceof WorkflowInProgress) {
+        return -1;
       } else {
         return 0;
       }
@@ -169,56 +75,38 @@ class PlanWorkflowListener extends JobInProgressListener
   };
  
   private Hashtable<JobID, JobInProgress> wjobs;
-  private Hashtable<WorkflowID, WorkflowSchedulingInfo> wsis;
 
-  private Map<SchedulingInfo, Object> queue;
-
-  public PlanWorkflowListener() {
-    this(new TreeMap<SchedulingInfo,
-                     Object>(PROGRESS_COMPARATOR));
-  }
+  private Hashtable<WorkflowID, WorkflowInProgress> wfs;
+  private Hashtable<JobID, JobInProgress> jobs; // that are not wjob
 
   public Hashtable<JobID, JobInProgress> getWJobs() {
     return wjobs;
   }
 
-  /**
-   * For clients that want to provide their own job priorities.
-   * @param jobQueue A collection whose iterator returns jobs in priority order.
-   */
-  protected PlanWorkflowListener(Map<SchedulingInfo, 
-                                     Object> queue) {
-    this.queue = Collections.synchronizedMap(queue);
+  protected PlanWorkflowListener() {
     this.wjobs = new Hashtable<JobID, JobInProgress> ();
-    this.wsis = 
-      new Hashtable<WorkflowID, WorkflowSchedulingInfo> ();
+    this.wfs = new Hashtable<WorkflowID, WorkflowInProgress> ();
+    this.jobs = new Hashtable<JobID, JobInProgress> ();
   }
 
-  /**
-   * Returns a synchronized view of the job queue.
-   */
-  public Map<SchedulingInfo, Object> getMap() {
+
+  public synchronized Collection<Object> getQueue() {
+    TreeSet<Object> queue = new TreeSet<Object>(PROGRESS_COMPARATOR);
+    queue.addAll(wfs.values());
+    queue.addAll(jobs.values());
     return queue;
-  }
-
-  public Collection<Object> getQueue() {
-    //TODO:WorkflowStatus might have already changed, 
-    //so reorder here.
-
-    return queue.values();
   }
   
   @Override
   public void jobAdded(JobInProgress job) {
     WorkflowID wfid = job.getStatus().getWorkflowID();
     if (null == wfid) {
-      queue.put(new JobSchedulingInfo(job.getStatus()), job);
+      jobs.put(job.getJobID(), job);
     } else {
       // it is a wjob
       String name = job.getJobName();
 
-      WorkflowInProgress wip = 
-        (WorkflowInProgress)queue.get(wsis.get(wfid));
+      WorkflowInProgress wip = wfs.get(wfid);
       WorkflowStatus wfStatus = wip.getStatus();
       if (WJobStatus.isSubmitter(name)) {
         // the job is submitter
@@ -261,15 +149,8 @@ class PlanWorkflowListener extends JobInProgressListener
 
   @Override
   public void workflowAdded(WorkflowInProgress wf) {
-    WorkflowSchedulingInfo wsi = 
-      new WorkflowSchedulingInfo(wf.getConf().getDeadline(),
-                                 wf.getConf().getSchedulingPlan(),
-                                 wf.getStatus());
-
-    wsis.put(wf.getStatus().getWorkflowID(), wsi);
-    queue.put(wsi, wf);
-    LOG.info("workflow Added : " + wf.getConf().getName()
-             + ", queue size " + queue.size());
+    wfs.put(wf.getStatus().getWorkflowID(), wf);
+    LOG.info("workflow Added : " + wf.getConf().getName());
   }
 
   // Job will be removed once the job completes
@@ -279,46 +160,39 @@ class PlanWorkflowListener extends JobInProgressListener
   @Override
   public void workflowRemoved(WorkflowInProgress wf) {}
 
-  private void jobCompleted(JobSchedulingInfo oldInfo) {
-    queue.remove(oldInfo);
-  }
-
-  private void wJobCompleted(WorkflowID wfid, 
-                             JobSchedulingInfo oldInfo) {
-    WorkflowInProgress wip = 
-      (WorkflowInProgress) queue.get(wsis.get(wfid));
-    wip.getStatus().addFinishedWJob(oldInfo.getJobID());
-    if (wip.getStatus().isCompleted()) {
-      workflowCompleted(wsis.get(wfid));
-      wsis.remove(wfid);
+  private void jobCompleted(JobID id) {
+    if (jobs.keySet().contains(id)){
+      jobs.remove(id);
+    } else if (wjobs.keySet().contains(id)){
+      JobInProgress jip = wjobs.get(id);
+      WorkflowID wfid = jip.getStatus().getWorkflowID();
+      WorkflowInProgress wip = wfs.get(wfid);
+      wip.getStatus().addFinishedWJob(id);
+      if (wip.getStatus().isCompleted()) {
+        workflowCompleted(wfid);
+        wfs.remove(wfid);
+      }
+      wjobs.remove(id);
     }
-    wjobs.remove(oldInfo.getJobID());
   }
 
-  private void workflowCompleted(WorkflowSchedulingInfo oldInfo) {
-    LOG.info("Shen Li: workflow completed " +
-        oldInfo.getWorkflowID().toString());
-    queue.remove(oldInfo);
+  private void workflowCompleted(WorkflowID wfid) {
+    LOG.info("Shen Li: workflow completed " + wfid.toString());
+    wfs.remove(wfid);
   }
   
   @Override
   public synchronized void jobUpdated(JobChangeEvent event) {
     JobInProgress job = event.getJobInProgress();
     if (event instanceof JobStatusChangeEvent) {
-      WorkflowID wfid = job.getStatus().getWorkflowID();
+      JobID id = job.getJobID();
       JobStatusChangeEvent statusEvent = (JobStatusChangeEvent)event;
-      JobSchedulingInfo oldInfo = 
-        new JobSchedulingInfo(statusEvent.getOldStatus());
       if (statusEvent.getEventType() == EventType.RUN_STATE_CHANGED) {
         int runState = statusEvent.getNewStatus().getRunState();
         if (JobStatus.SUCCEEDED == runState ||
             JobStatus.FAILED == runState ||
             JobStatus.KILLED == runState) {
-          if (null == wfid) {
-            jobCompleted(oldInfo);
-          } else {
-            wJobCompleted(wfid, oldInfo);
-          }
+          jobCompleted(id);
         }
       }
     }
