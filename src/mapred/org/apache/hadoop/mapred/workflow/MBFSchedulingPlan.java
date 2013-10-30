@@ -53,9 +53,11 @@ public class MBFSchedulingPlan extends SchedulingPlan {
 
       for (String jobName : wjobs.keySet()) {
         HashSet<String> curDeps = deps.get(jobName);
-        long benefit = 0;
-        for (String dep : curDeps) {
-          benefit += (benefits.get(dep) / preCounts.get(dep));
+        long benefit = benefits.get(jobName);
+        if (null != curDeps) {
+          for (String dep : curDeps) {
+            benefit += (benefits.get(dep) / preCounts.get(dep));
+          }
         }
         wjobs.get(jobName).setPriority(benefit);
       }
@@ -70,6 +72,7 @@ public class MBFSchedulingPlan extends SchedulingPlan {
         midSlots = (minSlots + maxSlots) / 2;
         ArrayList<SchedulingEvent> curSched = 
           WorkflowUtil.checkFeasibility(wfConf, deps, preCounts, midSlots);
+        System.out.println("After checkFeasibility");
         if (null == curSched) {
           minSlots = midSlots + 1;
         } else {
@@ -126,6 +129,7 @@ public class MBFSchedulingPlan extends SchedulingPlan {
   @Override
   public void write(DataOutput out) throws IOException {
     out.writeInt(slotNum);
+    System.out.println("PPPPPPPPPPPPPPPPPPPPP wrote slot number");
     if (null == schedEvents) {
       out.writeInt(0);
     } else {

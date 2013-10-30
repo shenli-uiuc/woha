@@ -41,6 +41,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class WorkflowConf extends Configuration implements Writable{
 
+    public static final String WORKFLOW_SCHEDULER_XML = 
+                               "workflow-scheduler.xml";
     public static final String SCHEDULING_PLAN_PROPERTY_NAME = 
                                "mapred.workflow.schedulingPlan";
 
@@ -65,6 +67,8 @@ public class WorkflowConf extends Configuration implements Writable{
 
     private SchedulingPlan plan;
 
+    private Configuration wConf;
+
     /**
      * This constructor is only used to create a WorkflowConf
      * object using readFields()
@@ -88,15 +92,18 @@ public class WorkflowConf extends Configuration implements Writable{
       this.jobs = jobs;
       this.datasets = datasets;
       this.inDs = inDs;
+      this.wConf = new Configuration(false);
+      this.wConf.addResource(WORKFLOW_SCHEDULER_XML);
       initJobs();
 
       // the task scheduler in-use may ignore this scheduling plan
-      Configuration conf = new Configuration();
       Class<? extends SchedulingPlan> planClass = 
-        conf.getClass(SCHEDULING_PLAN_PROPERTY_NAME, 
+        wConf.getClass(SCHEDULING_PLAN_PROPERTY_NAME, 
           FairSchedulingPlan.class, SchedulingPlan.class);
+      System.out.println("PPPPPPPPPPPPPPPPPPPP in constructor: " 
+                        + planClass.getName());
       this.plan = 
-        (SchedulingPlan)ReflectionUtils.newInstance(planClass, conf);
+        (SchedulingPlan)ReflectionUtils.newInstance(planClass, wConf);
     
     }
 
@@ -204,6 +211,9 @@ public class WorkflowConf extends Configuration implements Writable{
       out.writeLong(minPara);
       out.writeLong(deadline);
 
+      // write configuration
+      wConf.write(out);
+
       // write jobs
       out.writeInt(jobs.size());
       for (String name : jobs.keySet()) {
@@ -235,6 +245,9 @@ public class WorkflowConf extends Configuration implements Writable{
       for (String name : inactiveJobs) {
         Text.writeString(out, name);
       }
+
+      //write scheduling plan
+      plan.write(out);
     }
   
     /**
@@ -247,6 +260,10 @@ public class WorkflowConf extends Configuration implements Writable{
       user = Text.readString(in);
       minPara = in.readLong();
       deadline = in.readLong();
+
+      // read configuration
+      wConf = new Configuration(false);
+      wConf.readFields(in);
 
       int size = 0;
       String tmpName;
@@ -306,10 +323,12 @@ public class WorkflowConf extends Configuration implements Writable{
       // read scheduling plan
       Configuration conf = new Configuration();
       Class<? extends SchedulingPlan> planClass =
-        conf.getClass(SCHEDULING_PLAN_PROPERTY_NAME,
+        wConf.getClass(SCHEDULING_PLAN_PROPERTY_NAME,
             FairSchedulingPlan.class, SchedulingPlan.class);
+      System.out.println("PPPPPPPPPPPPPPPPPPPP in write: "
+          + planClass.getName());
       plan = 
-        (SchedulingPlan)ReflectionUtils.newInstance(planClass, conf);
+        (SchedulingPlan)ReflectionUtils.newInstance(planClass, wConf);
       plan.readFields(in);
 
       LOG.info("WorkflowConf.readFields: done");

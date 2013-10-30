@@ -18,7 +18,7 @@
   </property>
   <property>
     <name>mapred.jobtracker.taskScheduler</name>
-    <value>org.apache.hadoop.mapred.FIFOWorkflowScheduler</value>
+    <value>org.apache.hadoop.mapred.PlanWorkflowScheduler</value>
   </property>
   <property>
     <name>mapred.tasktracker.map.tasks.maximum</name>
@@ -31,9 +31,5 @@
   <property>
     <name>mapred.reduce.slowstart.completed.maps</name>
     <value>1.00</value>
-  </property>
-  <property>
-    <name>mapred.workflow.schedulingPlan</name>
-    <value>org.apache.hadoop.mapred.workflow.MBFSchedulingPlan</value>
   </property>
 </configuration>

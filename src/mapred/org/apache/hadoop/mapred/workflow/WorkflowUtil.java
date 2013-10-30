@@ -78,42 +78,45 @@ public class WorkflowUtil {
            !jobDoneEvents.isEmpty() ||
            !redStartEvents.isEmpty()) {
 
-      eventTime = jobDoneEvents.firstKey();
-      while (eventTime.longValue() <= curTime) {
+      while (!jobDoneEvents.isEmpty() && 
+          jobDoneEvents.firstKey().longValue() <= curTime) {
+        eventTime = jobDoneEvents.firstKey();
         WJobConf wJobConf = 
           wJobConfs.get(jobDoneEvents.get(eventTime));
         //activates jobs
         String name = wJobConf.getName();
         HashSet<String> curDeps = deps.get(name);
-        for (String dep : curDeps) {
-          int preCount = preCounts.get(dep) - 1;
-          preCounts.put(dep, preCount);
-          if (0 == preCount) {
-            inactiveSet.remove(dep);
-            activeSet.add(dep);
+        if (null != curDeps) {
+          for (String dep : curDeps) {
+            int preCount = preCounts.get(dep) - 1;
+            preCounts.put(dep, preCount);
+            if (0 == preCount) {
+              inactiveSet.remove(dep);
+              activeSet.add(dep);
+            }
           }
         }
         jobDoneEvents.remove(eventTime);
       }
 
-      eventTime = redStartEvents.firstKey();
-      while (eventTime.longValue() <= curTime) {
+      while (!redStartEvents.isEmpty() && 
+          redStartEvents.firstKey().longValue() <= curTime) {
+        eventTime = redStartEvents.firstKey();
         activeSet.add(redStartEvents.get(eventTime));
         redStartEvents.remove(eventTime);
-        eventTime = redStartEvents.firstKey();
       }
 
       // handle free slot events
-      eventTime = freeSlotEvents.firstKey();
-      while (eventTime.longValue() <= curTime) {
+      while (!freeSlotEvents.isEmpty() && 
+          freeSlotEvents.firstKey().longValue() <= curTime) {
+        eventTime = freeSlotEvents.firstKey();
         curSlot += freeSlotEvents.get(eventTime).intValue();
         freeSlotEvents.remove(eventTime);
-        eventTime = freeSlotEvents.firstKey();
       }
 
       // shedule tasks
       long schedRequirement = 0;
-      while (curSlot > 0) {
+      if (curSlot > 0) {
         ArrayList<String> activeJobs = new ArrayList<String>(activeSet);
 
         for (String activeJob : activeJobs) {

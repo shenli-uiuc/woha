@@ -197,6 +197,7 @@ public class WorkflowClient extends Configured{
         // it is current a mix of map and reduce slots
         int maxSlots = clusterStatus.getMaxMapTasks()
                      + clusterStatus.getMaxReduceTasks();
+        System.out.println("Before generating plan");
         wfCopy.generatePlan(maxSlots);
 
         System.out.println("Before copyAndConfigureFiles");

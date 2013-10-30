@@ -31,8 +31,6 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.workflow.WJobStatus;
 import org.apache.hadoop.mapred.workflow.WJobConf;
 import org.apache.hadoop.mapred.workflow.WorkflowID;
-import org.apache.hadoop.mapred.workflow.WJob;
-import org.apache.hadoop.mapred.workflow.WJobInProgress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -236,8 +234,8 @@ public class SlotHolder implements
 
     WJobStatus wJobStatus = new WJobStatus(
         new WorkflowID("test_tracker", 21),
-        null,
-        null);
+        2,
+        2);
 
     SlotHolder slotHolder = new SlotHolder();
     try {
