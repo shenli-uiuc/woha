@@ -28,7 +28,7 @@ public class WJobConf implements Writable{
   // The estimated execution time of mapper and reducer
   private long mapEstTime;
   private long redEstTime;
-  private long priority;
+  private double priority;
 
   // default constructor is only used before readFields
   public WJobConf() {}
@@ -120,11 +120,11 @@ public class WJobConf implements Writable{
     return redEstTime;
   }
 
-  public long getPriority() {
+  public double getPriority() {
     return this.priority;
   }
 
-  public void setPriority(long priority) {
+  public void setPriority(double priority) {
     this.priority = priority;
   }
 
@@ -136,7 +136,7 @@ public class WJobConf implements Writable{
     out.writeInt(redNum);
     out.writeLong(mapEstTime);
     out.writeLong(redEstTime);
-    out.writeLong(priority);
+    out.writeDouble(priority);
 
     //inputs
     out.writeInt(inputs.length);

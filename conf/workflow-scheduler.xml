@@ -6,6 +6,6 @@
 <configuration>
   <property>
     <name>mapred.workflow.schedulingPlan</name>
-    <value>org.apache.hadoop.mapred.workflow.MBFSchedulingPlan</value>
+    <value>org.apache.hadoop.mapred.workflow.MDBFSchedulingPlan</value>
   </property>
 </configuration>

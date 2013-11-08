@@ -198,7 +198,9 @@ public class WorkflowClient extends Configured{
         int maxSlots = clusterStatus.getMaxMapTasks()
                      + clusterStatus.getMaxReduceTasks();
         System.out.println("Before generating plan");
-        wfCopy.generatePlan(maxSlots);
+        if (!wfCopy.generatePlan(maxSlots)) {
+          throw new IOException("Workflow deadline not feasible. exit.");
+        }
 
         System.out.println("Before copyAndConfigureFiles");
         copyAndConfigureFiles(wfCopy, submitWfDir);

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+<!--
+Automatically created by Apache Jakarta Tomcat JspC.
+-->
+<web-app>
+
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.legacyjobhistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.legacyjobhistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.loadhistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.loadhistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.job_005fauthorization_005ferror_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.job_005fauthorization_005ferror_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.jobdetailshistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.jobdetailshistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.analysejobhistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.analysejobhistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.jobhistoryhome_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.jobhistoryhome_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.jobtaskshistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.jobtaskshistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.taskstatshistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.taskstatshistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.taskdetailshistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.taskdetailshistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>org.apache.hadoop.mapred.jobconf_005fhistory_jsp</servlet-name>
+        <servlet-class>org.apache.hadoop.mapred.jobconf_005fhistory_jsp</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.legacyjobhistory_jsp</servlet-name>
+        <url-pattern>/legacyjobhistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.loadhistory_jsp</servlet-name>
+        <url-pattern>/loadhistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.job_005fauthorization_005ferror_jsp</servlet-name>
+        <url-pattern>/job_authorization_error.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.jobdetailshistory_jsp</servlet-name>
+        <url-pattern>/jobdetailshistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.analysejobhistory_jsp</servlet-name>
+        <url-pattern>/analysejobhistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.jobhistoryhome_jsp</servlet-name>
+        <url-pattern>/jobhistoryhome.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.jobtaskshistory_jsp</servlet-name>
+        <url-pattern>/jobtaskshistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.taskstatshistory_jsp</servlet-name>
+        <url-pattern>/taskstatshistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.taskdetailshistory_jsp</servlet-name>
+        <url-pattern>/taskdetailshistory.jsp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>org.apache.hadoop.mapred.jobconf_005fhistory_jsp</servlet-name>
+        <url-pattern>/jobconf_history.jsp</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+

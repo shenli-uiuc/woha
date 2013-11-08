@@ -119,6 +119,9 @@ public class WorkflowUtil {
       if (curSlot > 0) {
         ArrayList<String> activeJobs = new ArrayList<String>(activeSet);
 
+        // order jobs based on priority
+
+
         for (String activeJob : activeJobs) {
           WJobConf wJobConf = wJobConfs.get(activeJob);
           String name = wJobConf.getName();
@@ -236,6 +239,17 @@ public class WorkflowUtil {
                     preCounts, maxSlots, relativeDeadline);
   }
 
+  public static Hashtable<String, Integer> countPres(
+      Hashtable<String, HashSet<String> > pres) {
+    Hashtable<String, Integer> preCounts = 
+      new Hashtable<String, Integer>();
+
+    for (String name : pres.keySet()) {
+      preCounts.put(name, pres.get(name).size());
+    }
+    return preCounts;
+  }
+
   /**
    * build up dependency graph with the given WJobConf data
    *
@@ -243,15 +257,16 @@ public class WorkflowUtil {
    * @param deps the result dependency information. must not be null.
    * @param preCounts the number of prerequisites of each job. must not be null
    */
-  public static void buildDeps(
+  public static void buildDepsAndPres(
       Hashtable<String, WJobConf> wJobConfs,
       Hashtable<String, HashSet<String> > deps,
-      Hashtable<String, Integer> preCounts) throws IOException {
+      Hashtable<String, HashSet<String> > pres) throws IOException {
     if (null == wJobConfs ||
         null == deps ||
-        null == preCounts) {
-      throw new IOException("all parameters of WorkflowUtil.buildDeps" 
-                            + "must not be null");
+        null == pres) {
+      throw new IOException(
+          "all parameters of WorkflowUtil.buildDepsAndPres" 
+          + "must not be null");
     }
 
     Hashtable<String, String> dsToJobName = 
@@ -278,7 +293,123 @@ public class WorkflowUtil {
           preSet.add(preName);
         }
       }
-      preCounts.put(name, preSet.size());
+      pres.put(name, preSet);
+    }
+  }
+
+  public static void buildDeps(
+      Hashtable<String, WJobConf> wJobConfs,
+      Hashtable<String, HashSet<String> > deps,
+      Hashtable<String, Integer> preCounts) throws IOException {
+
+    if (null == preCounts) {
+      throw new IOException(
+          "all paramters of WorkflowUtil.buildDeps must not be null");
+    }
+    Hashtable<String, HashSet<String> > pres = 
+      new Hashtable<String, HashSet<String> >();
+
+    buildDepsAndPres(wJobConfs, deps, pres);
+    for (String name : pres.keySet()) {
+      preCounts.put(name, pres.get(name).size());
+    }
+  }
+
+
+  public static void recursivelyUpdatePriority(
+      Hashtable<String, WJobConf> wJobConfs,
+      Hashtable<String, HashSet<String> > pres,
+      TreeSet<String> activeSet,
+      String name,
+      double delta) {
+    WJobConf jobConf = wJobConfs.get(name);
+    jobConf.setPriority(jobConf.getPriority() + delta);
+    HashSet<String> preSet = pres.get(name);
+
+    if (activeSet.contains(name)) {
+      activeSet.remove(name);
+      activeSet.add(name);
+    }
+    for (String preName : preSet) {
+      recursivelyUpdatePriority(wJobConfs, pres, activeSet, 
+          preName, delta / preSet.size());
+    }
+  }
+
+  /**
+   * This method will update wJobConfs priority with the sched order
+   *
+   * @return the order that the jobs are scheduled based on the 
+   * dynamically changing priority.
+   */
+  public static void getSchedOrder(
+      Hashtable<String, WJobConf> wJobConfs,
+      Hashtable<String, HashSet<String> > deps,
+      Hashtable<String, HashSet<String> > pres) throws IOException {
+    if (null == wJobConfs || 
+        null == deps ||
+        null == pres) {
+      throw new IOException(
+          "all paramters of WorkflowUtil.getSchedOrder must not be null");
+    }
+
+    TreeSet<String> activeSet = 
+      new TreeSet<String>(new PriorityComparator(wJobConfs));
+
+    for (String name : wJobConfs.keySet()) {
+      if (pres.get(name).size() <= 0) {
+        activeSet.add(name);
+      }
+    }
+
+    int index = 0;
+    Hashtable<String, Integer> order = new Hashtable<String, Integer>();
+    Hashtable<String, Integer> preCounts = 
+      new Hashtable<String, Integer>();
+
+    for (String name : pres.keySet()) {
+      preCounts.put(name, pres.get(name).size());
+    }
+
+    //copy pres
+    Hashtable<String, HashSet<String> > presCopy = 
+      new Hashtable<String, HashSet<String> >();
+    for (String name : pres.keySet()) {
+      presCopy.put(name, 
+                   (HashSet<String>)pres.get(name).clone());
+    }
+
+    while (activeSet.size() > 0) {
+      String name = activeSet.first();
+      order.put(name, index);
+      index++;
+      activeSet.remove(name);
+      HashSet<String> curDeps = deps.get(name);
+      if (null == curDeps) {
+        continue;
+      }
+      for (String dep : curDeps) {
+        HashSet<String> curPres = presCopy.get(dep);
+        curPres.remove(name);
+        double delta = wJobConfs.get(dep).getPriority();
+        delta = delta / (curPres.size() * (curPres.size() + 1));
+        for (String remainPre : curPres) {
+          recursivelyUpdatePriority(wJobConfs, presCopy, activeSet,
+              remainPre, delta);
+        }
+        int cnt = preCounts.get(dep) - 1;
+        preCounts.remove(dep);
+        if (cnt > 0) {
+          preCounts.put(dep, cnt);
+        } else {
+          activeSet.add(dep);
+        }
+      }
+    }
+
+    for (String name : order.keySet()) {
+      index = order.get(name);
+      wJobConfs.get(name).setPriority(order.size() - index);
     }
   }
 }
