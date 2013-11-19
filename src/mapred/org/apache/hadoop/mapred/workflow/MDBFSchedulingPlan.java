@@ -75,13 +75,16 @@ public class MDBFSchedulingPlan extends SchedulingPlan {
       int oriMaxSlots = maxSlots;
       slotNum = 0;
       while (minSlots < maxSlots) {
+        System.out.println("**" + minSlots + ", " + maxSlots);
         midSlots = (minSlots + maxSlots) / 2;
         ArrayList<SchedulingEvent> curSched = 
           WorkflowUtil.checkFeasibility(wfConf, deps, preCounts, midSlots);
         System.out.println("After checkFeasibility");
         if (null == curSched) {
+          System.out.println("infeasible");
           minSlots = midSlots + 1;
         } else {
+          System.out.println("feasible");
           schedEvents = curSched;
           slotNum = midSlots;
           maxSlots = midSlots - 1;

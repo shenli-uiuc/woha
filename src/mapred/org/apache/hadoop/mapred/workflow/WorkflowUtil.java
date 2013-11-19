@@ -78,6 +78,9 @@ public class WorkflowUtil {
            !jobDoneEvents.isEmpty() ||
            !redStartEvents.isEmpty()) {
 
+      //System.out.println(freeSlotEvents.size() + ", " +
+      //                   jobDoneEvents.size() + ", " +
+      //                   redStartEvents.size());
       while (!jobDoneEvents.isEmpty() && 
           jobDoneEvents.firstKey().longValue() <= curTime) {
         eventTime = jobDoneEvents.firstKey();
@@ -193,9 +196,9 @@ public class WorkflowUtil {
       }
 
       // for debug
-      for (SchedulingEvent event : schedEvents) {
-        System.out.println(event.ttd + ", " + event.schedRequirement);
-      }
+      //for (SchedulingEvent event : schedEvents) {
+      //  System.out.println(event.ttd + ", " + event.schedRequirement);
+      //}
       return schedEvents;
     }
   }
@@ -322,6 +325,7 @@ public class WorkflowUtil {
       TreeSet<String> activeSet,
       String name,
       double delta) {
+    System.out.println(name);
     WJobConf jobConf = wJobConfs.get(name);
     jobConf.setPriority(jobConf.getPriority() + delta);
     HashSet<String> preSet = pres.get(name);
