@@ -196,6 +196,7 @@ public class WorkflowSubmitter {
 
       if (isValid) {
         //TODO: duplicate WorkflowConf parameter
+        System.out.println("Valid");
         long waitLen = wf.getSubmitAt() - System.currentTimeMillis();
         if (waitLen > 0) {
           Thread.sleep(waitLen);

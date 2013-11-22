@@ -63,14 +63,15 @@ public class MDBFSchedulingPlan extends SchedulingPlan {
         wjobs.get(jobName).setPriority(benefit);
       }
 
+      System.out.println("before getSchedOrder");
       // calculate the dyanmic priority, such that when one job finishes
       // its benifits from its deps get shared by other pres
       WorkflowUtil.getSchedOrder(wjobs, deps, pres);
-
+      System.out.println("after getSchedOrder");
 
       // search for the minimum possible slots and 
       // generate scheduling plan
-      int minSlots = 0;
+      int minSlots = 1;
       int midSlots = 0;
       int oriMaxSlots = maxSlots;
       slotNum = 0;

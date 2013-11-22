@@ -127,6 +127,7 @@ class FIFOWorkflowScheduler extends TaskScheduler {
     // schedule maps
     int state;
     for (int i=0; i < availableMapSlots; ++i) {
+      long startTime = System.currentTimeMillis();
       state = NOT_ASSIGNED;
       synchronized (queue) {
         for (Object obj : queue) {
@@ -218,6 +219,9 @@ class FIFOWorkflowScheduler extends TaskScheduler {
           break;
         }
       }
+      long endTime = System.currentTimeMillis();
+      long schedDelay = endTime - startTime;
+      LOG.info("Shen Li fifo log: schedDelay " + schedDelay);
     }
     int assignedMaps = assignedTasks.size();
 

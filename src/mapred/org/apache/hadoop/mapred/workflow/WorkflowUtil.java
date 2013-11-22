@@ -74,6 +74,7 @@ public class WorkflowUtil {
     freeSlotEvents.put(new Long(0), slot);
     Long eventTime = null;
     long prevRequirement = 0;
+    System.out.println("Start simulate");
     while (!freeSlotEvents.isEmpty() ||
            !jobDoneEvents.isEmpty() ||
            !redStartEvents.isEmpty()) {
@@ -188,7 +189,9 @@ public class WorkflowUtil {
   
     // post process schedEvents to regulate times.
     // curTime is when the workflow finishes
+    System.out.println(curTime + ", " + relativeDeadline);
     if (curTime > relativeDeadline) {
+      System.out.println("infeasible in simulate");
       return null;
     } else {
       for (SchedulingEvent event : schedEvents) {
@@ -199,6 +202,7 @@ public class WorkflowUtil {
       //for (SchedulingEvent event : schedEvents) {
       //  System.out.println(event.ttd + ", " + event.schedRequirement);
       //}
+      System.out.println("feasible in simulate");
       return schedEvents;
     }
   }
@@ -326,12 +330,18 @@ public class WorkflowUtil {
       String name,
       double delta) {
     System.out.println(name);
+
+    boolean addBack = false;
+    if (activeSet.contains(name)) {
+      activeSet.remove(name);
+      addBack = true;
+
+    }
     WJobConf jobConf = wJobConfs.get(name);
     jobConf.setPriority(jobConf.getPriority() + delta);
     HashSet<String> preSet = pres.get(name);
 
-    if (activeSet.contains(name)) {
-      activeSet.remove(name);
+    if (addBack) {
       activeSet.add(name);
     }
     for (String preName : preSet) {
@@ -368,12 +378,6 @@ public class WorkflowUtil {
 
     int index = 0;
     Hashtable<String, Integer> order = new Hashtable<String, Integer>();
-    Hashtable<String, Integer> preCounts = 
-      new Hashtable<String, Integer>();
-
-    for (String name : pres.keySet()) {
-      preCounts.put(name, pres.get(name).size());
-    }
 
     //copy pres
     Hashtable<String, HashSet<String> > presCopy = 
@@ -385,9 +389,10 @@ public class WorkflowUtil {
 
     while (activeSet.size() > 0) {
       String name = activeSet.first();
+      System.out.println("active" + name);
       order.put(name, index);
       index++;
-      activeSet.remove(name);
+      System.out.println(activeSet.remove(name) + ", " +  activeSet.contains(name));
       HashSet<String> curDeps = deps.get(name);
       if (null == curDeps) {
         continue;
@@ -395,18 +400,16 @@ public class WorkflowUtil {
       for (String dep : curDeps) {
         HashSet<String> curPres = presCopy.get(dep);
         curPres.remove(name);
-        double delta = wJobConfs.get(dep).getPriority();
-        delta = delta / (curPres.size() * (curPres.size() + 1));
-        for (String remainPre : curPres) {
-          recursivelyUpdatePriority(wJobConfs, presCopy, activeSet,
-              remainPre, delta);
-        }
-        int cnt = preCounts.get(dep) - 1;
-        preCounts.remove(dep);
-        if (cnt > 0) {
-          preCounts.put(dep, cnt);
-        } else {
+        if (curPres.size() <= 0) {
+          System.out.println("actove + " + dep);
           activeSet.add(dep);
+        } else {
+          double delta = wJobConfs.get(dep).getPriority();
+          delta = delta / (curPres.size() * (curPres.size() + 1));
+          for (String remainPre : curPres) {
+            recursivelyUpdatePriority(wJobConfs, presCopy, activeSet,
+                remainPre, delta);
+          }
         }
       }
     }

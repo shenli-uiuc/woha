@@ -64,7 +64,7 @@ public class MBFSchedulingPlan extends SchedulingPlan {
 
       // search for the minimum possible slots and 
       // generate scheduling plan
-      int minSlots = 0;
+      int minSlots = 1;
       int midSlots = 0;
       int oriMaxSlots = maxSlots;
       slotNum = 0;
@@ -73,10 +73,11 @@ public class MBFSchedulingPlan extends SchedulingPlan {
         midSlots = (minSlots + maxSlots) / 2;
         ArrayList<SchedulingEvent> curSched = 
           WorkflowUtil.checkFeasibility(wfConf, deps, preCounts, midSlots);
-        System.out.println("After checkFeasibility");
+        System.out.println("After checkFeasibility, " + curSched);
         if (null == curSched) {
           minSlots = midSlots + 1;
         } else {
+          System.out.println("not null!!");
           schedEvents = curSched;
           slotNum = midSlots;
           maxSlots = midSlots - 1;

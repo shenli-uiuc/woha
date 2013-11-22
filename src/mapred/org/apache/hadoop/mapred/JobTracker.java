@@ -239,6 +239,8 @@ public class JobTracker implements MRConstants, InterTrackerProtocol,
   // Shen Li: workflow listener
   private final List<WorkflowInProgressListener> workflowInProgressListeners =
     new CopyOnWriteArrayList<WorkflowInProgressListener>();
+  private long lastLogTime = System.currentTimeMillis();
+  private static final long logInterval = 5000;
 
   private List<ServicePlugin> plugins;
   
@@ -3070,6 +3072,17 @@ public class JobTracker implements MRConstants, InterTrackerProtocol,
       } else {
         List<Task> tasks = getSetupAndCleanupTasks(taskTrackerStatus);
         if (tasks == null ) {
+          long currentTime = System.currentTimeMillis();
+          if (currentTime > lastLogTime + logInterval) {
+            ClusterMetrics clusterMetrics = getClusterMetrics();
+            int occupiedMap = clusterMetrics.getOccupiedMapSlots();
+            int occupiedReduce = clusterMetrics.getOccupiedReduceSlots();
+            if (occupiedMap > 0 || occupiedReduce > 0) {
+              LOG.info("Shen Li log occupied slots: " +
+                       occupiedMap + ", " + occupiedReduce);
+            }
+            lastLogTime = currentTime;
+          }
           tasks = taskScheduler.assignTasks(taskTrackers.get(trackerName));
         }
         if (tasks != null) {
