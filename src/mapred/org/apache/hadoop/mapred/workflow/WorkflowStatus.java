@@ -45,15 +45,17 @@ public class WorkflowStatus implements Writable, Cloneable {
   private Hashtable<String, Integer> preCounts;
 
   // job names, as they are not submitted yet, they do not have job id.
-  private HashSet<String> inactiveJobs;
-  private HashSet<String> activeJobs;
-  private HashSet<String> scheduledJobs;
-  private HashSet<String> submittedJobs;
+  private TreeSet<String> inactiveJobs;
+  private TreeSet<String> activeJobs;
+  private TreeSet<String> scheduledJobs;
+  private TreeSet<String> submittedJobs;
   private HashSet<String> finishedJobs;
 
   // Job name to job ID, and reverse
   private Hashtable<String, JobID> nameToID;
   private Hashtable<JobID, String> idToName;
+
+  private Hashtable<String, Double> priorities;
 
   // wjob submitter task scheduled time, 
   // used to check the schedule delay. If the delay
@@ -77,10 +79,19 @@ public class WorkflowStatus implements Writable, Cloneable {
     this.wfid = wfid;
     this.runState = runState;
     this.submitTime = submitTime;
-    this.inactiveJobs = new HashSet<String>();
-    this.activeJobs = new HashSet<String>();
-    this.scheduledJobs = new HashSet<String>();
-    this.submittedJobs = new HashSet<String>();
+    this.priorities = new Hashtable<String, Double>();
+    for (String jobName : conf.getWJobConfs().keySet()) {
+      priorities.put(jobName,
+          new Double(conf.getWJobConfs().get(jobName).getPriority()));
+    }
+    this.inactiveJobs = new TreeSet<String>(
+          new WorkflowUtil.StaticPriorityComparator(this.priorities));
+    this.activeJobs = new TreeSet<String>(
+          new WorkflowUtil.StaticPriorityComparator(this.priorities));
+    this.scheduledJobs = new TreeSet<String>(
+          new WorkflowUtil.StaticPriorityComparator(this.priorities));
+    this.submittedJobs = new TreeSet<String>(
+          new WorkflowUtil.StaticPriorityComparator(this.priorities));
     this.finishedJobs = new HashSet<String>();
     this.nameToID = new Hashtable<String, JobID>();
     this.idToName = new Hashtable<JobID, String>();
@@ -201,13 +212,17 @@ public class WorkflowStatus implements Writable, Cloneable {
 
   public void setInactiveJobs(HashSet<String> inactiveJobs) {
     synchronized (inactiveJobs) {
-      this.inactiveJobs = inactiveJobs;
+      for (String jobName : inactiveJobs) {
+        this.inactiveJobs.add(jobName);
+      }
     }
   }
 
   public void setActiveJobs(HashSet<String> activeJobs) {
     synchronized (activeJobs) {
-      this.activeJobs = activeJobs;
+      for (String jobName : activeJobs) {
+        this.activeJobs.add(jobName);
+      }
     }
   }
 
@@ -319,19 +334,19 @@ public class WorkflowStatus implements Writable, Cloneable {
     return wfid;
   }
 
-  public HashSet<String> getInactiveJobs() {
+  public TreeSet<String> getInactiveJobs() {
     return inactiveJobs;
   }
 
-  public HashSet<String> getActiveJobs() {
+  public TreeSet<String> getActiveJobs() {
     return activeJobs;
   }
 
-  public HashSet<String> getScheduledJobs() {
+  public TreeSet<String> getScheduledJobs() {
     return scheduledJobs;
   }
 
-  public HashSet<String> getSubmittedJobs() {
+  public TreeSet<String> getSubmittedJobs() {
     return submittedJobs;
   }
 
@@ -377,6 +392,13 @@ public class WorkflowStatus implements Writable, Cloneable {
     out.writeInt(runState);
     out.writeLong(submitTime);
     out.writeLong(schedWork);
+
+    //write priorities
+    out.writeInt(priorities.size());
+    for (String name : priorities.keySet()) {
+      Text.writeString(out, name);
+      out.writeDouble(priorities.get(name).doubleValue());
+    }
 
     //write deps
     out.writeInt(deps.size());
@@ -465,6 +487,16 @@ public class WorkflowStatus implements Writable, Cloneable {
 
     int size = 0;
 
+    //read priorities
+    size = in.readInt();
+    priorities = new Hashtable<String, Double>();
+    while (size > 0) {
+      String name = Text.readString(in);
+      double priority = in.readDouble();
+      priorities.put(name, new Double(priority));
+      --size;
+    }
+
     //read deps
     size = in.readInt();
     deps = new Hashtable<String, HashSet<String> >();
@@ -495,7 +527,8 @@ public class WorkflowStatus implements Writable, Cloneable {
 
     //read inactive jobs
     size = in.readInt();
-    inactiveJobs = new HashSet<String>();
+    inactiveJobs = new TreeSet<String>(
+        new WorkflowUtil.StaticPriorityComparator(priorities));
     while(size > 0) {
       inactiveJobs.add(Text.readString(in));
       --size;
@@ -503,7 +536,8 @@ public class WorkflowStatus implements Writable, Cloneable {
 
     //read active jobs
     size = in.readInt();
-    activeJobs = new HashSet<String>();
+    activeJobs = new TreeSet<String>(
+        new WorkflowUtil.StaticPriorityComparator(priorities));
     while(size > 0) {
       activeJobs.add(Text.readString(in));
       --size;
@@ -511,7 +545,8 @@ public class WorkflowStatus implements Writable, Cloneable {
 
     //read scheduled jobs
     size = in.readInt();
-    scheduledJobs = new HashSet<String>();
+    scheduledJobs = new TreeSet<String>(
+        new WorkflowUtil.StaticPriorityComparator(priorities));
     while (size > 0) {
       scheduledJobs.add(Text.readString(in));
       --size;
@@ -519,7 +554,8 @@ public class WorkflowStatus implements Writable, Cloneable {
 
     //read submitted jobs
     size = in.readInt();
-    submittedJobs = new HashSet<String> ();
+    submittedJobs = new TreeSet<String> (
+        new WorkflowUtil.StaticPriorityComparator(priorities));
     while (size > 0) {
       submittedJobs.add(Text.readString(in));
       --size;

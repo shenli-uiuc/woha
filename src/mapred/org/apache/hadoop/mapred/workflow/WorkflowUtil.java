@@ -15,6 +15,29 @@ import java.util.Iterator;
  */
 public class WorkflowUtil {
 
+  static class StaticPriorityComparator implements Comparator<String> {
+    
+    Hashtable<String, Double> priorities;
+
+    private StaticPriorityComparator(){}
+
+    public StaticPriorityComparator(Hashtable<String, Double> priorities) {
+      this.priorities = priorities;
+    }
+
+    @Override
+    public int compare(String o1, String o2) {
+      if (priorities.get(o1) > priorities.get(o2)) {
+        return -1;
+      } else if (priorities.get(o1) < priorities.get(o2)) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+    
+  }
+
   static class PriorityComparator implements Comparator<String> {
 
     Hashtable<String, WJobConf> wJobConfs;

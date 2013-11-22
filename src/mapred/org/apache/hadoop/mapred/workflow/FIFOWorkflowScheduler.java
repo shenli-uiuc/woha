@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -168,7 +169,7 @@ class FIFOWorkflowScheduler extends TaskScheduler {
 
               // no available submitter map tasks
               // try to schedule wjob tasks
-              HashSet<String> submittedJobs = 
+              TreeSet<String> submittedJobs = 
                 wfStatus.getSubmittedJobs();
               Hashtable<String, JobID> nameToID = 
                 wfStatus.getNameToID();
@@ -244,7 +245,7 @@ class FIFOWorkflowScheduler extends TaskScheduler {
           } else {
             WorkflowInProgress wip = (WorkflowInProgress) obj;
             WorkflowStatus wfStatus = wip.getStatus();
-            HashSet<String> submittedJobs = wfStatus.getSubmittedJobs();
+            TreeSet<String> submittedJobs = wfStatus.getSubmittedJobs();
             Hashtable<String, JobID> nameToID = wfStatus.getNameToID();
             for (String name : submittedJobs) {
               JobID id = nameToID.get(name);
