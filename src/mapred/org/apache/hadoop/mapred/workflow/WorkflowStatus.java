@@ -33,7 +33,6 @@ public class WorkflowStatus implements Writable, Cloneable {
        "FAILED", "KILLED"};
 
   private WorkflowID wfid;
-  private JobID submitterID;
   private int runState;
   private long submitTime;
   private long schedWork;
@@ -79,11 +78,28 @@ public class WorkflowStatus implements Writable, Cloneable {
     this.wfid = wfid;
     this.runState = runState;
     this.submitTime = submitTime;
-    this.priorities = new Hashtable<String, Double>();
+    Hashtable<String, Double> tmpPriorities = new Hashtable<String, Double>();
+    // make sure priorities are unque, so that the tree set does not throw
+    // away duplicate elements
     for (String jobName : conf.getWJobConfs().keySet()) {
-      priorities.put(jobName,
+      tmpPriorities.put(jobName,
           new Double(conf.getWJobConfs().get(jobName).getPriority()));
     }
+    PriorityQueue<String> pQueue = new PriorityQueue<String> (
+        conf.getWJobConfs().size(),
+        new WorkflowUtil.StaticPriorityComparator(tmpPriorities));
+    for (String jobName : conf.getWJobConfs().keySet()) {
+      pQueue.add(jobName);
+    }
+
+    this.priorities = new Hashtable<String, Double>();
+    double priority = pQueue.size();
+    while(pQueue.size() > 0) {
+      String jobName = pQueue.poll();
+      this.priorities.put(jobName, new Double(priority));
+      priority = priority - 1;
+    }
+
     this.inactiveJobs = new TreeSet<String>(
           new WorkflowUtil.StaticPriorityComparator(this.priorities));
     this.activeJobs = new TreeSet<String>(
@@ -100,7 +116,6 @@ public class WorkflowStatus implements Writable, Cloneable {
     this.deps = new Hashtable<String, HashSet<String> >();
     this.preCounts = new Hashtable<String, Integer>();
     this.schedTime = new Hashtable<String, Long>();
-    this.submitterID = null;
     this.schedWork = 0;
     setActiveJobs(conf.cloneActiveJobs());
     LOG.info("Shen Li: activeJobs " + conf.cloneActiveJobs().size() +
@@ -118,21 +133,6 @@ public class WorkflowStatus implements Writable, Cloneable {
                                       wJobConf.getMapNum(),
                                       wJobConf.getRedNum()));
     }
-  }
-
-  public boolean setSubmitterID(JobID id) {
-    synchronized (this) {
-      if (null != this.submitterID) {
-        return false;
-      } else {
-        this.submitterID = id;
-        return true;
-      }
-    }
-  }
-
-  public JobID getSubmitterID() {
-    return this.submitterID;
   }
 
   public WJobStatus getWJobStatus(String name) {

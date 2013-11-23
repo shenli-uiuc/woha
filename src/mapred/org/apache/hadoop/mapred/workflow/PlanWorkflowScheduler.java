@@ -148,6 +148,7 @@ class PlanWorkflowScheduler extends TaskScheduler {
               JobID submitterID = wJobStatus.getSubmitterID();
 
               if (null == submitterID) {
+                LOG.info("null submitter: " + submitterID + ", " + activeJobName);
                 continue;
               }
 
@@ -209,6 +210,20 @@ class PlanWorkflowScheduler extends TaskScheduler {
                 }
               }
             }
+/*
+            if (NOT_ASSIGNED != state) {
+              String msg = "";
+              for (String activeJobName : wfStatus.getActiveJobs()) {
+                msg = msg + activeJobName + ", ";
+              }
+              LOG.info("check active jobs: " + msg);
+              msg = "";
+              for (String inactiveJobName : wfStatus.getInactiveJobs()) {
+                msg = msg + inactiveJobName + ", ";
+              }
+              LOG.info("check inactive jobs: " + msg);
+            }
+            */
           }
 
           if (ASSIGNED_LOCAL == state) {

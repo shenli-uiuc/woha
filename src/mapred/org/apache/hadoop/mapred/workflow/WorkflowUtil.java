@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import java.util.Map;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.PriorityQueue;
 
 /**
  * offer some common methods to process workflows
@@ -85,12 +86,12 @@ public class WorkflowUtil {
                                             wJobConf.getRedNum()));
     }
   
-    TreeMap<Long, Integer> freeSlotEvents = 
+    TreeMap<Long, Integer > freeSlotEvents = 
       new TreeMap<Long, Integer>();
-    TreeMap<Long, String> jobDoneEvents = 
-      new TreeMap<Long, String>();
-    TreeMap<Long, String> redStartEvents = 
-      new TreeMap<Long, String>();
+    TreeMap<Long, HashSet<String> > jobDoneEvents = 
+      new TreeMap<Long, HashSet<String> >();
+    TreeMap<Long, HashSet<String> > redStartEvents = 
+      new TreeMap<Long, HashSet<String> >();
 
     long curTime = 0;
     int curSlot = 0;
@@ -108,18 +109,19 @@ public class WorkflowUtil {
       while (!jobDoneEvents.isEmpty() && 
           jobDoneEvents.firstKey().longValue() <= curTime) {
         eventTime = jobDoneEvents.firstKey();
-        WJobConf wJobConf = 
-          wJobConfs.get(jobDoneEvents.get(eventTime));
-        //activates jobs
-        String name = wJobConf.getName();
-        HashSet<String> curDeps = deps.get(name);
-        if (null != curDeps) {
-          for (String dep : curDeps) {
-            int preCount = preCounts.get(dep) - 1;
-            preCounts.put(dep, preCount);
-            if (0 == preCount) {
-              inactiveSet.remove(dep);
-              activeSet.add(dep);
+        for (String jobName : jobDoneEvents.get(eventTime)) {
+          WJobConf wJobConf = wJobConfs.get(jobName);
+          //activates jobs
+          String name = wJobConf.getName();
+          HashSet<String> curDeps = deps.get(name);
+          if (null != curDeps) {
+            for (String dep : curDeps) {
+              int preCount = preCounts.get(dep) - 1;
+              preCounts.put(dep, preCount);
+              if (0 == preCount) {
+                inactiveSet.remove(dep);
+                activeSet.add(dep);
+              }
             }
           }
         }
@@ -129,7 +131,7 @@ public class WorkflowUtil {
       while (!redStartEvents.isEmpty() && 
           redStartEvents.firstKey().longValue() <= curTime) {
         eventTime = redStartEvents.firstKey();
-        activeSet.add(redStartEvents.get(eventTime));
+        activeSet.addAll(redStartEvents.get(eventTime));
         redStartEvents.remove(eventTime);
       }
 
@@ -162,9 +164,20 @@ public class WorkflowUtil {
             schedRequirement += wJobConf.getMapEstTime() * assignedMap;
             status.setRemainingMap(map);
             long nextEventTime = curTime + wJobConf.getMapEstTime();
-            freeSlotEvents.put(new Long(nextEventTime), assignedMap);
+            if (freeSlotEvents.keySet().contains(nextEventTime)) {
+              freeSlotEvents.put(
+                  nextEventTime,
+                  assignedMap + freeSlotEvents.get(nextEventTime));
+            } else {
+              freeSlotEvents.put(nextEventTime, assignedMap);
+            }
             if (map <= 0) {
-              redStartEvents.put(new Long(nextEventTime), name);
+              if (!redStartEvents.keySet().contains(nextEventTime)) {
+                redStartEvents.put(
+                    nextEventTime,
+                    new HashSet<String>());
+              }
+              redStartEvents.get(nextEventTime).add(name);
               // remove the wjob for now, and add it back when the
               // reduce start event fires.
               activeSet.remove(name);
@@ -180,9 +193,20 @@ public class WorkflowUtil {
             schedRequirement += wJobConf.getRedEstTime() * assignedRed;
             status.setRemainingRed(red);
             long nextEventTime = curTime + wJobConf.getRedEstTime();
-            freeSlotEvents.put(new Long(nextEventTime), assignedRed);
+            if (freeSlotEvents.keySet().contains(nextEventTime)) {
+              freeSlotEvents.put(
+                  nextEventTime,
+                  assignedRed + freeSlotEvents.get(nextEventTime));
+            } else {
+              freeSlotEvents.put(nextEventTime, assignedRed);
+            }
             if (red <= 0) {
-              jobDoneEvents.put(new Long(nextEventTime), name);
+              if (!jobDoneEvents.keySet().contains(nextEventTime)) {
+                jobDoneEvents.put(
+                    nextEventTime,
+                    new HashSet<String> ());
+              }
+              jobDoneEvents.get(nextEventTime).add(name);
               activeSet.remove(name);
             }
 
@@ -250,6 +274,7 @@ public class WorkflowUtil {
                      Hashtable<String, Integer> preCounts,
                      int maxSlots) {
     Hashtable<String, WJobConf> wJobConfs = wfConf.getWJobConfs();
+    //has to guarantee that the priority in wJobConfs are unique
     TreeSet<String> activeSet = 
       new TreeSet<String>(new PriorityComparator(wJobConfs));
     TreeSet<String> inactiveSet = 
@@ -349,14 +374,14 @@ public class WorkflowUtil {
   public static void recursivelyUpdatePriority(
       Hashtable<String, WJobConf> wJobConfs,
       Hashtable<String, HashSet<String> > pres,
-      TreeSet<String> activeSet,
+      PriorityQueue<String> activeQueue,
       String name,
       double delta) {
     System.out.println(name);
 
     boolean addBack = false;
-    if (activeSet.contains(name)) {
-      activeSet.remove(name);
+    if (activeQueue.contains(name)) {
+      activeQueue.remove(name);
       addBack = true;
 
     }
@@ -365,11 +390,39 @@ public class WorkflowUtil {
     HashSet<String> preSet = pres.get(name);
 
     if (addBack) {
-      activeSet.add(name);
+      activeQueue.add(name);
     }
     for (String preName : preSet) {
-      recursivelyUpdatePriority(wJobConfs, pres, activeSet, 
+      recursivelyUpdatePriority(wJobConfs, pres, activeQueue, 
           preName, delta / preSet.size());
+    }
+  }
+
+  public static void generateUniquePriority(
+      Hashtable<String, WJobConf> wJobConfs,
+      Hashtable<String, HashSet<String> > deps,
+      Hashtable<String, HashSet<String> > pres) throws IOException {
+    Hashtable<String, Double> tmpPriorities = 
+      new Hashtable<String, Double>();
+
+    for (String jobName : wJobConfs.keySet()) {
+      tmpPriorities.put(jobName,
+        new Double(wJobConfs.get(jobName).getPriority()));
+    }
+
+    PriorityQueue<String> pQueue = new PriorityQueue<String> (
+        wJobConfs.size(),
+        new StaticPriorityComparator(tmpPriorities));
+
+    for (String jobName : wJobConfs.keySet()) {
+      pQueue.add(jobName);
+    }
+
+    double priority = pQueue.size();
+    while (pQueue.size() > 0) {
+      String jobName = pQueue.poll();
+      wJobConfs.get(jobName).setPriority(priority);
+      priority -= 1;
     }
   }
 
@@ -390,12 +443,14 @@ public class WorkflowUtil {
           "all paramters of WorkflowUtil.getSchedOrder must not be null");
     }
 
-    TreeSet<String> activeSet = 
-      new TreeSet<String>(new PriorityComparator(wJobConfs));
+    PriorityQueue<String> activeQueue = 
+      new PriorityQueue<String>(
+          wJobConfs.size(),
+          new PriorityComparator(wJobConfs));
 
     for (String name : wJobConfs.keySet()) {
       if (pres.get(name).size() <= 0) {
-        activeSet.add(name);
+        activeQueue.add(name);
       }
     }
 
@@ -410,12 +465,11 @@ public class WorkflowUtil {
                    (HashSet<String>)pres.get(name).clone());
     }
 
-    while (activeSet.size() > 0) {
-      String name = activeSet.first();
+    while (activeQueue.size() > 0) {
+      String name = activeQueue.poll();
       System.out.println("active" + name);
       order.put(name, index);
       index++;
-      System.out.println(activeSet.remove(name) + ", " +  activeSet.contains(name));
       HashSet<String> curDeps = deps.get(name);
       if (null == curDeps) {
         continue;
@@ -424,13 +478,13 @@ public class WorkflowUtil {
         HashSet<String> curPres = presCopy.get(dep);
         curPres.remove(name);
         if (curPres.size() <= 0) {
-          System.out.println("actove + " + dep);
-          activeSet.add(dep);
+          System.out.println("active + " + dep);
+          activeQueue.add(dep);
         } else {
           double delta = wJobConfs.get(dep).getPriority();
           delta = delta / (curPres.size() * (curPres.size() + 1));
           for (String remainPre : curPres) {
-            recursivelyUpdatePriority(wJobConfs, presCopy, activeSet,
+            recursivelyUpdatePriority(wJobConfs, presCopy, activeQueue,
                 remainPre, delta);
           }
         }

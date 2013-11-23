@@ -35,11 +35,13 @@ public class MBFSchedulingPlan extends SchedulingPlan {
     Hashtable<String, WJobConf> wjobs = wfConf.getWJobConfs();
     Hashtable<String, HashSet<String> > deps = 
       new Hashtable<String, HashSet<String> >();
-    Hashtable<String, Integer> preCounts = 
-      new Hashtable<String, Integer>();
+    Hashtable<String, Integer> preCounts; 
+    Hashtable<String, HashSet<String> > pres = 
+      new Hashtable<String, HashSet<String> >();
 
     try {
-      WorkflowUtil.buildDeps(wjobs, deps, preCounts);
+      WorkflowUtil.buildDepsAndPres(wjobs, deps, pres);
+      preCounts = WorkflowUtil.countPres(pres);
 
       // calculate benefits
       Hashtable<String, Long> benefits = 
@@ -61,6 +63,8 @@ public class MBFSchedulingPlan extends SchedulingPlan {
         }
         wjobs.get(jobName).setPriority(benefit);
       }
+
+      WorkflowUtil.generateUniquePriority(wjobs, deps, pres);
 
       // search for the minimum possible slots and 
       // generate scheduling plan

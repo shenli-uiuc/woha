@@ -66,6 +66,9 @@ public class MDBFSchedulingPlan extends SchedulingPlan {
       System.out.println("before getSchedOrder");
       // calculate the dyanmic priority, such that when one job finishes
       // its benifits from its deps get shared by other pres
+      //
+      // this also generates unique priority, so no need to call
+      // WorkflowUtil.generateUniquePriority here
       WorkflowUtil.getSchedOrder(wjobs, deps, pres);
       System.out.println("after getSchedOrder");
 

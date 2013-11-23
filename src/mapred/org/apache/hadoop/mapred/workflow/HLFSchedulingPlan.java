@@ -86,6 +86,8 @@ public class HLFSchedulingPlan extends SchedulingPlan {
       }
       System.out.println();
 
+      WorkflowUtil.generateUniquePriority(wjobs, deps, pres);
+
       preCounts = WorkflowUtil.countPres(pres);
       // search for the minimum possible slots and 
       // generate scheduling plan
