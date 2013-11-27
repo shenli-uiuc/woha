@@ -119,8 +119,9 @@ public class MultiWorkflowConf extends Configuration implements Writable{
           user = w.getAttribute("user");
           String strDeadline = w.getAttribute("deadline");
           System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+          submitAt = Long.parseLong(w.getAttribute("submitat"));
           if ('+' == strDeadline.charAt(0)) {
-            deadline = curTime + 
+            deadline = curTime + submitAt + 
               Long.parseLong(strDeadline.substring(1));
           } else {
             deadline = 
@@ -128,8 +129,7 @@ public class MultiWorkflowConf extends Configuration implements Writable{
           }
           System.out.println("deadline is " + strDeadline + ", " + deadline);
 
-          submitAt = curTime + 
-                        Long.parseLong(w.getAttribute("submitat"));
+          submitAt += curTime; 
 
           // read datasets
           datasets = new Hashtable<String, String>();

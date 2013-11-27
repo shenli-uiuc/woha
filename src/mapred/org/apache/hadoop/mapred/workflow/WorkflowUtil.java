@@ -223,7 +223,7 @@ public class WorkflowUtil {
       if (schedRequirement > 0) {
         SchedulingEvent schedEvent = 
           new SchedulingEvent(curTime, schedRequirement + prevRequirement);
-        prevRequirement = schedRequirement;
+        prevRequirement += schedRequirement;
         schedEvents.add(schedEvent);
       }
 

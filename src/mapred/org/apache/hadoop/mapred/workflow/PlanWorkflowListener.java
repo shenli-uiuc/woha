@@ -48,10 +48,12 @@ class PlanWorkflowListener extends JobInProgressListener
         WorkflowInProgress wip2 = (WorkflowInProgress) o2;
         long work1 = wip1.getStatus().getSchedWork();
         long work2 = wip2.getStatus().getSchedWork();
+        long ttd1 = wip1.getConf().getDeadline() - curTime;
+        long ttd2 = wip2.getConf().getDeadline() - curTime;
         long req1 = 
-          wip1.getConf().getSchedulingPlan().getRequirement(curTime);
+          wip1.getConf().getSchedulingPlan().getRequirement(ttd1);
         long req2 = 
-          wip2.getConf().getSchedulingPlan().getRequirement(curTime);
+          wip2.getConf().getSchedulingPlan().getRequirement(ttd2);
         long res1 = work1 - req1;
         long res2 = work2 - req2;
 

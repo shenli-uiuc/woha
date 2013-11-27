@@ -142,6 +142,24 @@ class EDFWorkflowListener extends JobInProgressListener
       } else if(o1.getDeadline() > o2.getDeadline()) {
         return 1;
       } else {
+        if (o1 instanceof WorkflowSchedulingInfo) {
+          WorkflowSchedulingInfo w1 = (WorkflowSchedulingInfo)o1;
+          if (o2 instanceof WorkflowSchedulingInfo) {
+            WorkflowSchedulingInfo w2 = (WorkflowSchedulingInfo)o2;
+            return w1.getWorkflowID().compareTo(
+                   w2.getWorkflowID());
+          } else {
+            return 1;
+          }
+        } else if (o1 instanceof JobSchedulingInfo) {
+          JobSchedulingInfo j1 = (JobSchedulingInfo)o1;
+          if (o2 instanceof JobSchedulingInfo) {
+            JobSchedulingInfo j2 = (JobSchedulingInfo)o2;
+            return j1.getJobID().compareTo(j2.getJobID());
+          } else {
+            return -1;
+          }
+        }
         return 0;
       }
     }
