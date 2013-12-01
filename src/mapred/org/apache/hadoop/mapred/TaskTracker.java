@@ -932,6 +932,9 @@ public class TaskTracker implements MRConstants, TaskUmbilicalProtocol,
 
     setIndexCache(new IndexCache(this.fConf));
 
+    // Shen Li: modify maxMapSlots and maxReduceSlots to use the same
+    // IntWritable
+    IntWritable maxSlots = new IntWritable(maxMapSlots);
     mapLauncher = new TaskLauncher(TaskType.MAP, maxMapSlots);
     reduceLauncher = new TaskLauncher(TaskType.REDUCE, maxReduceSlots);
     mapLauncher.start();
